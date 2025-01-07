@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views import home_view, test_view # Import de la vue d'accueil
 
 urlpatterns = [
     # URL pour l'administration
@@ -26,4 +27,10 @@ urlpatterns = [
     # URLs pour l'authentification avec JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # Page d'accueil
+    path('', home_view, name='home'),
+
+       # Endpoint de test
+    path('test-backend/', test_view, name='test_backend'),
 ]
