@@ -1,12 +1,33 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common'; // Ajout de CommonModule
+import { ApiService } from './services/api.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  standalone: true, // Si vous utilisez des composants autonomes
+  imports: [CommonModule], // Importation de CommonModule
+  template: `
+    <div>
+      <h1>Test Angular HttpClient</h1>
+      <button (click)="testHttpClient()">Test Backend</button>
+      <p *ngIf="response">{{ response | json }}</p>
+    </div>
+  `,
 })
 export class AppComponent {
-  title = 'frontend';
+  response: any;
+
+  constructor(private apiService: ApiService) {}
+
+  testHttpClient(): void {
+    this.apiService.getTest().subscribe(
+      (data) => {
+        console.log('Success:', data);
+        this.response = data;
+      },
+      (error) => {
+        console.error('Error:', error);
+      }
+    );
+  }
 }
