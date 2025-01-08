@@ -92,7 +92,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'duck23_store_db',  # Nom de votre base de données
         'USER': 'hobbes',         # Nom de l'utilisateur PostgreSQL
-        'PASSWORD': 'Marie1986',  # Mot de passe de l'utilisateur
+        'PASSWORD': 'Nicolas1990',  # Mot de passe de l'utilisateur
         'HOST': 'localhost',        # Adresse de votre serveur PostgreSQL
         'PORT': '5432',             # Port par défaut de PostgreSQL
     }
