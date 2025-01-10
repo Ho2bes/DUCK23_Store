@@ -46,7 +46,14 @@ jobs:
 
       - name: Run migrations and tests
         env:
-          DATABASE_URL: postgres://django:django@localhost:5432/test_db
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DB_NAME: test_db
+          DB_USER: django
+          DB_PASSWORD: django
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DEBUG: 'False'
+          ALLOWED_HOSTS: '127.0.0.1,localhost'
         run: |
           source env/bin/activate
           cd backend
