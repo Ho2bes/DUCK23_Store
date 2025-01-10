@@ -12,7 +12,6 @@ on:
 
 jobs:
   test-backend:
-    name: Test Backend (Django)
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -30,20 +29,15 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
-      - name: Install dependencies
-        run: |
+      - run: |
           python -m venv env
           source env/bin/activate
           pip install -r backend/requirements.txt
-
       - name: Run migrations and tests
         env:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
@@ -59,24 +53,18 @@ jobs:
           python manage.py test
 
   test-frontend:
-    name: Test Frontend (Angular)
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-
-      - name: Install dependencies
-        run: |
+      - run: |
           cd frontend
           npm install
-
-      - name: Run tests
-        run: |
+      - run: |
           cd frontend
           npm run test -- --watch=false
+        env:
+          CHROME_BIN: /usr/bin/google-chrome

@@ -16,13 +16,14 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import home_view, test_view # Import de la vue d'accueil
 
 urlpatterns = [
     # URL pour l'administration
     path('admin/', admin.site.urls),
+    path('api/accounts/', include('accounts.urls')),  # Inclusion des URLs de l'application accounts
 
     # URLs pour l'authentification avec JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
