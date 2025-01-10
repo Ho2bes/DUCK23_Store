@@ -1,48 +1,45 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
-from django.contrib.auth.models import User
+from accounts.models import CustomUser
 
 class BasicTests(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-
     def test_server_is_running(self):
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        client = APIClient()
+        response = client.get('/')  # Assure-toi que '/' est un endpoint valide.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 class UserTests(TestCase):
     def setUp(self):
         self.client = APIClient()
+        self.user_data = {
+            'username': 'testuser',
+            'password': 'testpassword',
+            'email': 'testuser@example.com',
+        }
 
     def test_register_user(self):
-        response = self.client.post('/api/register/', {
-            'username': 'testuser',
-            'password': 'testpassword'
-        })
+        response = self.client.post('/auth/register/', self.user_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_login_user(self):
-        self.client.post('/api/register/', {
-            'username': 'testuser',
-            'password': 'testpassword'
-        })
-        response = self.client.post('/api/token/', {
-            'username': 'testuser',
-            'password': 'testpassword'
+        CustomUser.objects.create_user(**self.user_data)
+        response = self.client.post('/auth/login/', {
+            'username': self.user_data['username'],
+            'password': self.user_data['password'],
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('access', response.data)
-        self.assertIn('refresh', response.data)
 
     def test_update_user(self):
-        user = User.objects.create_user(username='testuser', password='testpassword')
+        user = CustomUser.objects.create_user(**self.user_data)
         self.client.force_authenticate(user=user)
-        response = self.client.patch('/api/user/', {'email': 'newemail@test.com'})
+        response = self.client.put('/auth/user/', {'username': 'updateduser'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertEqual(user.username, 'updateduser')
 
     def test_delete_user(self):
-        user = User.objects.create_user(username='testuser', password='testpassword')
+        user = CustomUser.objects.create_user(**self.user_data)
         self.client.force_authenticate(user=user)
-        response = self.client.delete('/api/user/')
+        response = self.client.delete('/auth/user/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
