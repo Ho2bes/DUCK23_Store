@@ -1,7 +1,22 @@
 module.exports = function (config) {
   config.set({
     // Liste des navigateurs à utiliser
-    browsers: ['ChromeHeadless'], // Utilisation de ChromeHeadless pour CI
+    browsers: ['ChromeHeadlessNoSandbox'], // Utilisation de ChromeHeadless avec configuration spécifique pour CI
+
+    // Configuration pour ChromeHeadless avec des flags additionnels
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox', // Nécessaire pour éviter les erreurs de permission
+          '--disable-gpu', // Désactive l'accélération graphique
+          '--disable-dev-shm-usage', // Réduit l'utilisation de la mémoire partagée
+          '--headless', // Mode headless
+          '--disable-extensions', // Désactive les extensions pour éviter les conflits
+          '--remote-debugging-port=9222', // Nécessaire pour certains environnements CI
+        ],
+      },
+    },
 
     // Exécute les tests une seule fois (utile pour CI)
     singleRun: true,
@@ -39,7 +54,7 @@ module.exports = function (config) {
       }
     },
 
-    // Configurations supplémentaires
+    // Configurations supplémentaires pour Webpack
     webpackMiddleware: {
       stats: 'errors-only' // Réduit les logs inutiles
     },
