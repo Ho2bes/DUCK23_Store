@@ -29,15 +29,20 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - run: |
+
+      - name: Install dependencies
+        run: |
           python -m venv env
           source env/bin/activate
           pip install -r backend/requirements.txt
+
       - name: Run migrations and tests
         env:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
@@ -55,16 +60,27 @@ jobs:
   test-frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-      - run: |
+
+      - name: Install Chromium and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser libgtk-3-0 libnss3 libxss1 libasound2 libatk1.0-0 libpangocairo-1.0-0
+
+      - name: Install frontend dependencies
+        run: |
           cd frontend
           npm install
-      - run: |
+
+      - name: Run frontend tests
+        run: |
           cd frontend
           npm run test -- --watch=false
         env:
-          CHROME_BIN: /usr/bin/google-chrome
+          CHROME_BIN: /usr/bin/chromium-browser
