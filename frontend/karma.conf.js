@@ -1,7 +1,7 @@
 module.exports = function (config) {
   config.set({
     // Liste des navigateurs à utiliser
-    browsers: ['ChromeHeadlessNoSandbox'],
+    browsers: ['chrome'],
 
     // Définir les configurations personnalisées pour les navigateurs
     customLaunchers: {
