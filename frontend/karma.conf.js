@@ -1,13 +1,13 @@
-module.exports = function (config) {
+module.exports = function(config) {
   config.set({
     // Liste des navigateurs à utiliser
-    browsers: ['chrome'],
+    browsers: ['ChromeNoSandbox'], // Utilisation du launcher personnalisé
 
     // Définir les configurations personnalisées pour les navigateurs
     customLaunchers: {
-      ChromeHeadlessNoSandbox: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox', '--disable-gpu']
+      ChromeNoSandbox: {
+        base: 'Chrome',
+        flags: ['--headless', '--no-sandbox', '--disable-gpu', '--disable-software-rasterizer']
       }
     },
 
