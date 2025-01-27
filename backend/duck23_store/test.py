@@ -19,12 +19,12 @@ class UserTests(TestCase):
         }
 
     def test_register_user(self):
-        response = self.client.post('/auth/register/', self.user_data)
+        response = self.client.post('/api/accounts/register/', self.user_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_login_user(self):
         CustomUser.objects.create_user(**self.user_data)
-        response = self.client.post('/auth/login/', {
+        response = self.client.post('/api/accounts/login/', {
             'username': self.user_data['username'],
             'password': self.user_data['password'],
         })
@@ -33,7 +33,7 @@ class UserTests(TestCase):
     def test_update_user(self):
         user = CustomUser.objects.create_user(**self.user_data)
         self.client.force_authenticate(user=user)
-        response = self.client.put('/auth/user/', {'username': 'updateduser'})
+        response = self.client.put('/api/accounts/update/', {'username': 'updateduser'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user.refresh_from_db()
         self.assertEqual(user.username, 'updateduser')
@@ -41,5 +41,6 @@ class UserTests(TestCase):
     def test_delete_user(self):
         user = CustomUser.objects.create_user(**self.user_data)
         self.client.force_authenticate(user=user)
-        response = self.client.delete('/auth/user/')
+        response = self.client.delete('/api/accounts/delete/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
