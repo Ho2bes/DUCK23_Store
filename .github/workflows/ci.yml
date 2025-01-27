@@ -71,9 +71,7 @@ jobs:
     - name: Install Chromium and dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y chromium libgtk-3-0 libnss3 libxss1 libatk1.0-0 libpangocairo-1.0-0 fonts-liberation
-        sudo apt-get install -y libgbm-dev  # Ajout pour résoudre d'autres dépendances Chromium
-        sudo apt-get clean
+        sudo apt-get install -y chromium libgtk-3-0 libnss3 libxss1 libatk1.0-0 libpangocairo-1.0-0 fonts-liberation libgbm-dev
 
     - name: Install frontend dependencies
       run: |
@@ -86,4 +84,3 @@ jobs:
         npm run test -- --watch=false
       env:
         CHROME_BIN: /usr/bin/chromium
-
