@@ -8,13 +8,14 @@ import { ApiService } from './services/api.service';
   imports: [CommonModule], // Importation de CommonModule
   template: `
     <div>
-      <h1>Test Angular HttpClient</h1>
+      <h1>{{ title }}</h1> <!-- Utilisation de la propriété title dans le template -->
       <button (click)="testHttpClient()">Test Backend</button>
       <p *ngIf="response">{{ response | json }}</p>
     </div>
   `,
 })
 export class AppComponent {
+  title = 'Test Angular HttpClient'; // Ajout de la propriété title
   response: any;
 
   constructor(private apiService: ApiService) {}

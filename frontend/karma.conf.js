@@ -1,21 +1,14 @@
 module.exports = function (config) {
   config.set({
     // Liste des navigateurs à utiliser
-    browsers: ['ChromeHeadlessNoSandbox'], // Utilisation de ChromeHeadless avec configuration spécifique pour CI
+    browsers: ['ChromeHeadlessNoSandbox'],
 
-    // Configuration pour ChromeHeadless avec des flags additionnels
+    // Définir les configurations personnalisées pour les navigateurs
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
-        flags: [
-          '--no-sandbox', // Nécessaire pour éviter les erreurs de permission
-          '--disable-gpu', // Désactive l'accélération graphique
-          '--disable-dev-shm-usage', // Réduit l'utilisation de la mémoire partagée
-          '--headless', // Mode headless
-          '--disable-extensions', // Désactive les extensions pour éviter les conflits
-          '--remote-debugging-port=9222', // Nécessaire pour certains environnements CI
-        ],
-      },
+        flags: ['--no-sandbox', '--disable-gpu']
+      }
     },
 
     // Exécute les tests une seule fois (utile pour CI)
@@ -26,7 +19,7 @@ module.exports = function (config) {
 
     // Fichiers à inclure pour les tests
     files: [
-      { pattern: 'src/**/*.spec.ts', watched: false } // Ajout de watched: false pour améliorer les performances
+      { pattern: 'src/**/*.spec.ts', watched: false }
     ],
 
     // Préprocesseurs pour les fichiers
@@ -35,13 +28,13 @@ module.exports = function (config) {
     },
 
     // Configuration des reporters
-    reporters: ['progress'], // Utilisation du reporter "progress"
+    reporters: ['progress'],
 
     // Configuration Webpack
     webpack: {
-      mode: 'development', // Mode développement pour éviter la minification
+      mode: 'development',
       resolve: {
-        extensions: ['.js', '.ts'] // Assurez-vous que .ts est pris en charge
+        extensions: ['.js', '.ts']
       },
       module: {
         rules: [
@@ -54,14 +47,14 @@ module.exports = function (config) {
       }
     },
 
-    // Configurations supplémentaires pour Webpack
+    // Configurations supplémentaires
     webpackMiddleware: {
-      stats: 'errors-only' // Réduit les logs inutiles
+      stats: 'errors-only'
     },
 
     // Configuration pour empêcher les erreurs de timeout sur CI
-    browserNoActivityTimeout: 60000, // Augmente le délai d'inactivité
-    browserDisconnectTimeout: 10000, // Augmente le délai de déconnexion
+    browserNoActivityTimeout: 60000,
+    browserDisconnectTimeout: 10000,
 
     // Niveau de log
     logLevel: config.LOG_INFO
