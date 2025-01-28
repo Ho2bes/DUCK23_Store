@@ -79,7 +79,6 @@ jobs:
             libdrm2 \
             libxkbcommon0 \
             libxrandr2 \
-            libasound2 \
             libpangocairo-1.0-0 \
             libpango-1.0-0 \
             libgbm1 \
