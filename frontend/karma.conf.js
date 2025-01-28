@@ -1,18 +1,7 @@
 module.exports = function (config) {
   config.set({
     // Liste des navigateurs à utiliser
-    browsers: ['ChromeHeadlessNoSandbox'],
-
-    // Définir les configurations personnalisées pour les navigateurs
-    customLaunchers: {
-      ChromeHeadlessNoSandbox: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox', '--disable-gpu']
-      }
-    },
-
-    // Exécute les tests une seule fois (utile pour CI)
-    singleRun: true,
+    browsers: ['Puppeteer'],
 
     // Framework de test utilisé
     frameworks: ['jasmine'],
@@ -57,6 +46,12 @@ module.exports = function (config) {
     browserDisconnectTimeout: 10000,
 
     // Niveau de log
-    logLevel: config.LOG_INFO
+    logLevel: config.LOG_INFO,
+
+    // Configuration Puppeteer
+    puppeteer: {
+      headless: true, // Garde l'environnement sans interface graphique
+      args: ['--no-sandbox'] // Désactive le sandboxing
+    }
   });
 };
