@@ -71,7 +71,19 @@ jobs:
       - name: Install Chromium and dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y chromium libgtk-3-0 libnss3 libxss1 libatk1.0-0 libpangocairo-1.0-0 fonts-liberation libgbm-dev
+          sudo apt-get install -y \
+            libnss3 \
+            libatk1.0-0 \
+            libatk-bridge2.0-0 \
+            libcups2 \
+            libdrm2 \
+            libxkbcommon0 \
+            libxrandr2 \
+            libasound2 \
+            libpangocairo-1.0-0 \
+            libpango-1.0-0 \
+            libgbm1 \
+            libgtk-3-0
 
       - name: Install frontend dependencies
         run: |
@@ -83,5 +95,5 @@ jobs:
           cd frontend
           npm run test -- --watch=false --browsers=ChromeHeadless
         env:
-          CHROME_BIN: /usr/bin/chromium
+          CHROME_BIN: /usr/bin/google-chrome
           CI: 'true'
