@@ -60,27 +60,28 @@ jobs:
   test-frontend:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
 
-    - name: Install Chromium and dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y chromium libgtk-3-0 libnss3 libxss1 libatk1.0-0 libpangocairo-1.0-0 fonts-liberation libgbm-dev
+      - name: Install Chromium and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium libgtk-3-0 libnss3 libxss1 libatk1.0-0 libpangocairo-1.0-0 fonts-liberation libgbm-dev
 
-    - name: Install frontend dependencies
-      run: |
-        cd frontend
-        npm install
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
 
-    - name: Run frontend tests
-      run: |
-        cd frontend
-        npm run test -- --watch=false
-      env:
-        CHROME_BIN: /usr/bin/chromium
+      - name: Run frontend tests with Karma
+        run: |
+          cd frontend
+          npm run test -- --watch=false --browsers=ChromeHeadless
+        env:
+          CHROME_BIN: /usr/bin/chromium
+          CI: 'true'
