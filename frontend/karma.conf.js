@@ -1,15 +1,7 @@
 module.exports = function(config) {
   config.set({
     // Liste des navigateurs à utiliser
-    browsers: ['ChromeNoSandbox'], // Utilisation du launcher personnalisé
-
-    // Définir les configurations personnalisées pour les navigateurs
-    customLaunchers: {
-      ChromeNoSandbox: {
-        base: 'Chrome',
-        flags: ['--headless', '--no-sandbox', '--disable-gpu', '--disable-software-rasterizer']
-      }
-    },
+    browsers: ['ChromeHeadless'],
 
     // Exécute les tests une seule fois (utile pour CI)
     singleRun: true,
@@ -50,6 +42,14 @@ module.exports = function(config) {
     // Configurations supplémentaires
     webpackMiddleware: {
       stats: 'errors-only'
+    },
+
+    // Utilisation de Chrome sans sandbox
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-gpu']
+      }
     },
 
     // Configuration pour empêcher les erreurs de timeout sur CI
