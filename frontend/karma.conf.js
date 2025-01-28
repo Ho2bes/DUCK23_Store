@@ -1,14 +1,20 @@
-module.exports = function(config) {
+module.exports = function (config) {
+  const isCI = process.env.CI === 'true'; // Détection d'un environnement CI
+
   config.set({
     // Liste des navigateurs à utiliser
-    browsers: ['ChromeNoSandbox'], // Utilisation du launcher personnalisé
+    browsers: isCI ? ['ChromeHeadless'] : ['ChromeNoSandbox'],
 
     // Définir les configurations personnalisées pour les navigateurs
     customLaunchers: {
       ChromeNoSandbox: {
         base: 'Chrome',
-        flags: ['--headless', '--no-sandbox', '--disable-gpu', '--disable-software-rasterizer']
-      }
+        flags: ['--headless', '--no-sandbox', '--disable-gpu', '--disable-software-rasterizer'],
+      },
+      ChromeHeadless: {
+        base: 'Chrome',
+        flags: ['--headless', '--disable-gpu'],
+      },
     },
 
     // Exécute les tests une seule fois (utile pour CI)
@@ -19,12 +25,12 @@ module.exports = function(config) {
 
     // Fichiers à inclure pour les tests
     files: [
-      { pattern: 'src/**/*.spec.ts', watched: false }
+      { pattern: 'src/**/*.spec.ts', watched: false },
     ],
 
     // Préprocesseurs pour les fichiers
     preprocessors: {
-      'src/**/*.spec.ts': ['webpack']
+      'src/**/*.spec.ts': ['webpack'],
     },
 
     // Configuration des reporters
@@ -34,22 +40,22 @@ module.exports = function(config) {
     webpack: {
       mode: 'development',
       resolve: {
-        extensions: ['.js', '.ts']
+        extensions: ['.js', '.ts'],
       },
       module: {
         rules: [
           {
             test: /\.ts$/,
             use: 'ts-loader',
-            exclude: /node_modules/
-          }
-        ]
-      }
+            exclude: /node_modules/,
+          },
+        ],
+      },
     },
 
     // Configurations supplémentaires
     webpackMiddleware: {
-      stats: 'errors-only'
+      stats: 'errors-only',
     },
 
     // Configuration pour empêcher les erreurs de timeout sur CI
@@ -57,6 +63,6 @@ module.exports = function(config) {
     browserDisconnectTimeout: 10000,
 
     // Niveau de log
-    logLevel: config.LOG_INFO
+    logLevel: config.LOG_INFO,
   });
 };
