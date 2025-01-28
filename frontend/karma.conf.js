@@ -3,22 +3,43 @@ module.exports = function (config) {
 
   config.set({
     // Liste des navigateurs à utiliser
-    browsers: isCI ? ['ChromeHeadless'] : ['ChromeNoSandbox'],
+    browsers: isCI ? ['ChromeHeadlessCI'] : ['ChromeHeadless'],
 
     // Définir les configurations personnalisées pour les navigateurs
     customLaunchers: {
-      ChromeNoSandbox: {
-        base: 'Chrome',
-        flags: ['--headless', '--no-sandbox', '--disable-gpu', '--disable-software-rasterizer'],
-      },
       ChromeHeadless: {
         base: 'Chrome',
-        flags: ['--headless', '--disable-gpu'],
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--disable-dev-shm-usage',
+          '--no-sandbox',
+          '--disable-extensions',
+          '--disable-setuid-sandbox',
+          '--remote-debugging-port=9222',
+        ],
+      },
+      ChromeHeadlessCI: {
+        base: 'Chrome',
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--disable-dev-shm-usage',
+          '--no-sandbox',
+          '--disable-extensions',
+          '--disable-setuid-sandbox',
+          '--remote-debugging-port=9222',
+        ],
       },
     },
 
     // Exécute les tests une seule fois (utile pour CI)
     singleRun: true,
+
+    // Limiter les exécutions simultanées pour éviter les surcharges
+    concurrency: 1,
 
     // Framework de test utilisé
     frameworks: ['jasmine'],
