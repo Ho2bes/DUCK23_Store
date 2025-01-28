@@ -1,5 +1,5 @@
 module.exports = function (config) {
-  const isCI = process.env.CI === 'true'; // Détection d'un environnement CI
+  const isCI = process.env.CI === 'true'; // Détection d'un environnement CI test
 
   config.set({
     // Liste des navigateurs à utiliser
