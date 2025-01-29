@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ApiService } from './services/api.service';
 import { of } from 'rxjs';
 
@@ -9,11 +9,9 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent], // Ajoute le composant standalone dans `imports`
-      providers: [
-        ApiService,
-        provideHttpClientTesting(), // Fournit un module de test pour HttpClient
-      ],
+      imports: [HttpClientTestingModule], // Ajoute HttpClientTestingModule ici
+      providers: [ApiService],
+      declarations: [AppComponent],
     }).compileComponents();
 
     apiService = TestBed.inject(ApiService);
@@ -48,6 +46,7 @@ describe('AppComponent', () => {
     expect(app.data).toEqual(mockData);
   });
 });
+
 
 
 
