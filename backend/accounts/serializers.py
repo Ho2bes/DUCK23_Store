@@ -50,6 +50,30 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+# Serializer pour la mise à jour
+class UpdateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email']  # Inclure uniquement les champs modifiables
+
+    def validate_email(self, value):
+        """
+        Valide que l'email est au bon format.
+        """
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", value):
+            raise serializers.ValidationError("L'adresse email est invalide.")
+        return value
+
+    def validate_username(self, value):
+        """
+        Valide que le nom d'utilisateur est unique, sauf si c'est le même utilisateur.
+        """
+        request_user = self.context.get('request').user
+        if CustomUser.objects.filter(username=value).exclude(id=request_user.id).exists():
+            raise serializers.ValidationError("Ce nom d'utilisateur est déjà pris.")
+        return value
+
+
 '''
 from rest_framework import serializers
 from .models import CustomUser
