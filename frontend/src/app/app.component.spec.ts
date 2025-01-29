@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ApiService } from './services/api.service';
 import { of } from 'rxjs';
 
@@ -9,8 +9,11 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
-      providers: [ApiService, provideHttpClientTesting()],
+      imports: [AppComponent], // Ajoute le composant standalone dans `imports`
+      providers: [
+        ApiService,
+        provideHttpClientTesting(), // Fournit un module de test pour HttpClient
+      ],
     }).compileComponents();
 
     apiService = TestBed.inject(ApiService);
@@ -23,28 +26,26 @@ describe('AppComponent', () => {
   });
 
   it('should call ApiService to fetch data on init', () => {
-    const mockData = { message: 'Hello from API' };
-
-    // Simulation de la méthode `getData`
-    spyOn(apiService, 'getData').and.returnValue(of(mockData));
-
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-
-    app.ngOnInit(); // Appeler explicitement ngOnInit
-    expect(apiService.getData).toHaveBeenCalled(); // Vérifie que la méthode a été appelée
-  });
-
-  it('should set the fetched data to "data" property', () => {
-    const mockData = { message: 'Hello from API' };
-
+    const mockData = { message: 'Hello from backend' };
     spyOn(apiService, 'getData').and.returnValue(of(mockData));
 
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
 
     app.ngOnInit();
-    expect(app.data).toEqual(mockData); // Vérifie que "data" contient les données
+    expect(apiService.getData).toHaveBeenCalled();
+    expect(app.data).toEqual(mockData);
+  });
+
+  it('should set the fetched data to "data" property', () => {
+    const mockData = { message: 'Hello from backend' };
+    spyOn(apiService, 'getData').and.returnValue(of(mockData));
+
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.ngOnInit();
+    expect(app.data).toEqual(mockData);
   });
 });
 
