@@ -1,4 +1,58 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { AppComponent } from './app.component';
+import { ApiService } from './services/api.service';
+import { of } from 'rxjs';
+
+describe('AppComponent', () => {
+  let apiService: ApiService;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      providers: [ApiService, provideHttpClientTesting()],
+    }).compileComponents();
+
+    apiService = TestBed.inject(ApiService);
+  });
+
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+
+  it('should call ApiService to fetch data on init', () => {
+    const mockData = { message: 'Hello from API' };
+
+    // Simulation de la méthode `getData`
+    spyOn(apiService, 'getData').and.returnValue(of(mockData));
+
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.ngOnInit(); // Appeler explicitement ngOnInit
+    expect(apiService.getData).toHaveBeenCalled(); // Vérifie que la méthode a été appelée
+  });
+
+  it('should set the fetched data to "data" property', () => {
+    const mockData = { message: 'Hello from API' };
+
+    spyOn(apiService, 'getData').and.returnValue(of(mockData));
+
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.ngOnInit();
+    expect(app.data).toEqual(mockData); // Vérifie que "data" contient les données
+  });
+});
+
+
+
+
+/*
+import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http'; // Nouvelle méthode pour fournir HttpClient
 import { AppComponent } from './app.component'; // Composant standalone
 import { ApiService } from './services/api.service'; // Service dépendant
@@ -39,3 +93,5 @@ describe('AppComponent', () => {
     expect(typeof app.title).toBe('string'); // Vérifie que `title` est une chaîne de caractères
   });
 });
+*/
+
