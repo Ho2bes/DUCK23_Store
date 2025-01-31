@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
 import { ApiService } from './services/api.service';
 import { of } from 'rxjs';
@@ -10,8 +10,8 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent], // Importe AppComponent ici
-      providers: [ApiService, provideHttpClientTesting()],
+      imports: [HttpClientTestingModule, AppComponent], // Importe HttpClientTestingModule et AppComponent ici
+      providers: [ApiService],
     }).compileComponents();
 
     apiService = TestBed.inject(ApiService);
@@ -62,6 +62,7 @@ describe('AppComponent', () => {
     req.flush(mockData);
   });
 });
+
 
 
 
