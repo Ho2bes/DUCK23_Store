@@ -67,10 +67,10 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         """
         Valide que le nom d'utilisateur est unique, sauf si c'est le même utilisateur.
         """
-        request_user = self.context.get('request').user
-        if request_user is None:
+        request = self.context.get('request')
+        if request is None or request.user is None:
             raise serializers.ValidationError("L'utilisateur de la requête n'est pas disponible.")
-        if CustomUser.objects.filter(username=value).exclude(id=request_user.id).exists():
+        if CustomUser.objects.filter(username=value).exclude(id=request.user.id).exists():
             raise serializers.ValidationError("Ce nom d'utilisateur est déjà pris.")
         return value
 
