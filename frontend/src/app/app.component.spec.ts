@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
 import { ApiService } from './services/api.service';
 import { of } from 'rxjs';
 
 describe('AppComponent', () => {
   let apiService: ApiService;
+  let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -14,6 +15,11 @@ describe('AppComponent', () => {
     }).compileComponents();
 
     apiService = TestBed.inject(ApiService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify(); // Vérifie qu'il n'y a pas de requêtes en attente
   });
 
   it('should create the app', () => {
@@ -44,7 +50,19 @@ describe('AppComponent', () => {
     app.ngOnInit();
     expect(app.data).toEqual(mockData);
   });
+
+  it('should fetch data from the API', () => {
+    const mockData = { message: 'Hello from backend' };
+    apiService.getData().subscribe(data => {
+      expect(data).toEqual(mockData);
+    });
+
+    const req = httpMock.expectOne('your-api-endpoint'); // Remplacez par votre endpoint
+    expect(req.request.method).toBe("GET");
+    req.flush(mockData);
+  });
 });
+
 
 
 
