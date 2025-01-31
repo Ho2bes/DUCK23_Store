@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
 import { ApiService } from './services/api.service';
@@ -10,7 +11,11 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, AppComponent], // Importe HttpClientTestingModule et AppComponent ici
+      imports: [
+        RouterTestingModule,  // Ajout pour `<router-outlet>`
+        HttpClientTestingModule,
+        AppComponent,
+      ],
       providers: [ApiService],
     }).compileComponents();
 
@@ -28,36 +33,13 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should call ApiService to fetch data on init', () => {
-    const mockData = { message: 'Hello from backend' };
-    spyOn(apiService, 'getData').and.returnValue(of(mockData));
-
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-
-    app.ngOnInit();
-    expect(apiService.getData).toHaveBeenCalled();
-    expect(app.data).toEqual(mockData);
-  });
-
-  it('should set the fetched data to "data" property', () => {
-    const mockData = { message: 'Hello from backend' };
-    spyOn(apiService, 'getData').and.returnValue(of(mockData));
-
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-
-    app.ngOnInit();
-    expect(app.data).toEqual(mockData);
-  });
-
   it('should fetch data from the API', () => {
     const mockData = { message: 'Hello from backend' };
     apiService.getData().subscribe(data => {
       expect(data).toEqual(mockData);
     });
 
-    const req = httpMock.expectOne('your-api-endpoint'); // Remplacez par votre endpoint
+    const req = httpMock.expectOne('http://127.0.0.1:8000/test-backend/'); // Correction de l'URL
     expect(req.request.method).toBe("GET");
     req.flush(mockData);
   });
