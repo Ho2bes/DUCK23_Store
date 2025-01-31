@@ -6,12 +6,9 @@ from django.contrib.auth import authenticate
 from .models import CustomUser
 from .serializers import RegisterSerializer, UpdateUserSerializer
 
-
 # Enregistrement (register)
-from rest_framework.permissions import AllowAny
-
 class RegisterUserView(APIView):
-    permission_classes = [AllowAny]  # Autoriser l'accès non authentifié
+    permission_classes = [permissions.AllowAny]  # Autoriser l'accès non authentifié
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -23,13 +20,9 @@ class RegisterUserView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 # Connexion (login)
-from rest_framework.permissions import AllowAny
-
 class LoginUserView(APIView):
-    permission_classes = [AllowAny]  # Autoriser tout le monde à accéder à cette vue
+    permission_classes = [permissions.AllowAny]  # Autoriser tout le monde à accéder à cette vue
 
     def post(self, request):
         username = request.data.get("username")
@@ -58,8 +51,6 @@ class LoginUserView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-
-
 # Déconnexion (logout)
 class LogoutUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -84,14 +75,13 @@ class LogoutUserView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
 # Mise à jour (update)
 class UpdateUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request):
         user = request.user
-        serializer = UpdateUserSerializer(user, data=request.data, partial=True)
+        serializer = UpdateUserSerializer(user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(
@@ -99,7 +89,6 @@ class UpdateUserView(APIView):
                 status=status.HTTP_200_OK,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # Suppression (delete)
 class DeleteUserView(APIView):
