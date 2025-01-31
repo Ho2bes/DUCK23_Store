@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.contrib.auth import get_user_model
 
-
 class CustomUserModelTest(TestCase):
     def test_user_creation(self):
         user = CustomUser.objects.create_user(
@@ -33,7 +32,6 @@ class CustomUserModelTest(TestCase):
 
         with self.assertRaises(ValueError):
             CustomUser.objects.create_user(username="", password="testpass")
-
 
 # Tests pour la vue UpdateUserView
 class UpdateUserViewTests(APITestCase):
