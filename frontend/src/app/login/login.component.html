@@ -1,0 +1,9 @@
+<div class="login-container">
+	<h2>Connexion</h2>
+	<form (ngSubmit)="onSubmit($event)" #loginForm="ngForm">
+		<input type="email" name="email" ngModel placeholder="Ton email" required>
+	  <input type="password" name="password" ngModel placeholder="Ton mot de passe" required>
+	  <button type="submit" [disabled]="loginForm.invalid">Se connecter</button>
+	</form>
+	<p>Pas de compte ? <a routerLink="/register">Clique ici pour t'inscrire</a></p>
+  </div>

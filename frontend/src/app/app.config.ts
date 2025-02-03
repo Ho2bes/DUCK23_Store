@@ -1,10 +1,14 @@
-import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.service'; // Vérifie que ce fichier existe bien
 
-export const appConfig: ApplicationConfig = {
+export const appConfig = {
   providers: [
-    provideHttpClient(
-      // Ajoutez des options comme des interceptors ici si nécessaire
-    ),
+    provideHttpClient(withInterceptorsFromDi()),  // Ajoute automatiquement les interceptors
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
   ],
 };

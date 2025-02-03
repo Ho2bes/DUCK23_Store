@@ -1,0 +1,10 @@
+<div class="register-container">
+	<h2>Inscription</h2>
+	<form (ngSubmit)="onSubmit($event)" #registerForm="ngForm">
+		<input type="text" name="firstName" ngModel placeholder="Ton prénom" required>
+	  <input type="text" name="lastName" ngModel placeholder="Ton nom" required>
+	  <input type="email" name="email" ngModel placeholder="Ton email" required>
+	  <input type="password" name="password" ngModel placeholder="Ton mot de passe" required>
+	  <button type="submit" [disabled]="registerForm.invalid">S'inscrire</button>
+	</form>
+  </div>
