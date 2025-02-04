@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import CustomUser
 import re
 
-# Serializer pour l'enregistrement
+# ✅ Serializer pour l'inscription (uniquement `username`, `email`, `password`)
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -32,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_username(self, value):
         """
-        Valide que le nom d'utilisateur est unique et contient des caractères valides.
+        Valide que le nom d'utilisateur est unique.
         """
         if CustomUser.objects.filter(username=value).exists():
             raise serializers.ValidationError("Ce nom d'utilisateur est déjà pris.")
@@ -49,11 +49,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-# Serializer pour la mise à jour
+# ✅ Serializer pour la mise à jour du profil (l'utilisateur peut modifier ses infos)
 class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email']  # Inclure uniquement les champs modifiables
+        fields = ['first_name', 'last_name', 'address', 'phone_number', 'email']  # Ajout des champs modifiables
 
     def validate_email(self, value):
         """
@@ -61,6 +61,14 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         """
         if not re.match(r"[^@]+@[^@]+\.[^@]+", value):
             raise serializers.ValidationError("L'adresse email est invalide.")
+        return value
+
+    def validate_phone_number(self, value):
+        """
+        Valide que le numéro de téléphone contient uniquement des chiffres.
+        """
+        if value and not value.isdigit():
+            raise serializers.ValidationError("Le numéro de téléphone ne doit contenir que des chiffres.")
         return value
 
     def validate_username(self, value):
@@ -73,6 +81,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         if CustomUser.objects.filter(username=value).exclude(id=request.user.id).exists():
             raise serializers.ValidationError("Ce nom d'utilisateur est déjà pris.")
         return value
+
 
 
 '''

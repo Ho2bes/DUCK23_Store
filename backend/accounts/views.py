@@ -6,21 +6,20 @@ from django.contrib.auth import authenticate
 from .models import CustomUser
 from .serializers import RegisterSerializer, UpdateUserSerializer
 
-# Enregistrement (register)
+# ✅ Enregistrement (register)
 class RegisterUserView(APIView):
-    permission_classes = [permissions.AllowAny]  # Autoriser l'accès non authentifié
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        print("📥 Données reçues :", request.data)  # Debugging
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(
-                {"message": "User registered successfully."},
-                status=status.HTTP_201_CREATED,
-            )
+            return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
+        print("❌ Erreur de validation :", serializer.errors)  # Debugging
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Connexion (login)
+# ✅ Connexion (login)
 class LoginUserView(APIView):
     permission_classes = [permissions.AllowAny]  # Autoriser tout le monde à accéder à cette vue
 
@@ -51,7 +50,7 @@ class LoginUserView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-# Déconnexion (logout)
+# ✅ Déconnexion (logout)
 class LogoutUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -75,7 +74,16 @@ class LogoutUserView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-# Mise à jour (update)
+# ✅ Récupération des informations utilisateur (GET /user-info/)
+class UserInfoView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = UpdateUserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# ✅ Mise à jour (update)
 class UpdateUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -90,7 +98,7 @@ class UpdateUserView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Suppression (delete)
+# ✅ Suppression (delete)
 class DeleteUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

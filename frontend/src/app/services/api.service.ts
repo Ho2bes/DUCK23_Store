@@ -10,41 +10,42 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  // Tester la connexion au backend
+  // ✅ Restauration de getData() pour tester la connexion
   getData(): Observable<any> {
-    return this.http.get(`${this.backendUrl}test-backend/`); // Remplace '/api/data/' par '/test-backend/'
+    return this.http.get(`${this.backendUrl}test-backend/`);
   }
 
-  // Enregistrer un nouvel utilisateur
+  // ✅ Enregistrer un nouvel utilisateur
   registerUser(payload: any): Observable<any> {
     return this.http.post(`${this.backendUrl}api/accounts/register/`, payload);
   }
 
-  // Connexion d'un utilisateur
+  // ✅ Connexion d'un utilisateur
   loginUser(payload: any): Observable<any> {
     return this.http.post(`${this.backendUrl}api/accounts/login/`, payload);
   }
 
-  // Déconnexion d'un utilisateur
+  // ✅ Déconnexion d'un utilisateur
   logoutUser(): Observable<any> {
-    return this.http.post(`${this.backendUrl}api/accounts/logout/`, {}); // POST vide pour la déconnexion
+    return this.http.post(`${this.backendUrl}api/accounts/logout/`, {});
   }
 
-  // Mise à jour des informations utilisateur
+  // ✅ Mise à jour des informations utilisateur
   updateUser(payload: any): Observable<any> {
     return this.http.put(`${this.backendUrl}api/accounts/update/`, payload);
   }
 
-  // Suppression de l'utilisateur
+  // ✅ Suppression de l'utilisateur
   deleteUser(): Observable<any> {
     return this.http.delete(`${this.backendUrl}api/accounts/delete/`);
   }
 
-  // Récupérer les informations de l'utilisateur
+  // ✅ Récupérer les informations de l'utilisateur
   getUserInfo(): Observable<any> {
     return this.http.get(`${this.backendUrl}api/accounts/user-info/`);
   }
 }
+
 
 /*import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
