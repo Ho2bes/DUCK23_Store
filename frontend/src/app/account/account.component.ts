@@ -48,11 +48,19 @@ export class AccountComponent {
   }
 
   logout() {
-    this.apiService.logoutUser().subscribe(() => {
-      localStorage.removeItem('authToken');
-      this.router.navigate(['/login']);
+    this.apiService.logoutUser().subscribe({
+      next: (response) => {
+        console.log("✅ Déconnexion réussie :", response);
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken'); // 🔥 Supprime aussi le refreshToken
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error("❌ Erreur lors de la déconnexion :", error);
+      }
     });
   }
+
 
   deleteAccount() {
     this.apiService.deleteUser().subscribe(() => {

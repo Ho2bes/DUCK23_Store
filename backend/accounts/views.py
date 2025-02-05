@@ -11,27 +11,22 @@ class RegisterUserView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        print("📥 Données reçues :", request.data)  # Debugging
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
-        print("❌ Erreur de validation :", serializer.errors)  # Debugging
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # ✅ Connexion (login)
 class LoginUserView(APIView):
-    permission_classes = [permissions.AllowAny]  # Autoriser tout le monde à accéder à cette vue
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
 
         if not username or not password:
-            return Response(
-                {"error": "Username and password are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
 
         user = authenticate(username=username, password=password)
         if user is not None:
@@ -44,11 +39,7 @@ class LoginUserView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-        else:
-            return Response(
-                {"error": "Invalid credentials."},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        return Response({"error": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
 # ✅ Déconnexion (logout)
 class LogoutUserView(APIView):
@@ -58,21 +49,15 @@ class LogoutUserView(APIView):
         try:
             refresh_token = request.data.get("refresh")
             if not refresh_token:
-                return Response(
-                    {"error": "Refresh token is required."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                return Response({"error": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response(
-                {"message": "User logged out successfully."},
-                status=status.HTTP_200_OK,
-            )
+
+            return Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
+
         except Exception as e:
-            return Response(
-                {"error": "Invalid or expired token.", "details": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"error": "Invalid or expired token.", "details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # ✅ Récupération des informations utilisateur (GET /user-info/)
 class UserInfoView(APIView):
@@ -83,7 +68,7 @@ class UserInfoView(APIView):
         serializer = UpdateUserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-# ✅ Mise à jour (update)
+# ✅ Mise à jour des informations utilisateur (PUT /update/)
 class UpdateUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -92,20 +77,14 @@ class UpdateUserView(APIView):
         serializer = UpdateUserSerializer(user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(
-                {"message": "User updated successfully."},
-                status=status.HTTP_200_OK,
-            )
+            return Response({"message": "User updated successfully."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# ✅ Suppression (delete)
+# ✅ Suppression du compte utilisateur
 class DeleteUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request):
         user = request.user
         user.delete()
-        return Response(
-            {"message": "User deleted successfully."},
-            status=status.HTTP_204_NO_CONTENT,
-        )
+        return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
