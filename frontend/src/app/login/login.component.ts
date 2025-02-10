@@ -12,7 +12,7 @@ import { ApiService } from '../services/api.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  username: string = ''; // 🔥 CHANGÉ : `username` au lieu de `email`
+  username: string = '';
   password: string = '';
   errorMessage: string = '';
 
@@ -25,7 +25,7 @@ export class LoginComponent {
     }
 
     const payload = {
-      username: this.username.trim(), // 🔥 On envoie `username`, pas `email`
+      username: this.username.trim(),
       password: this.password
     };
 
@@ -34,12 +34,11 @@ export class LoginComponent {
     this.apiService.loginUser(payload).subscribe({
       next: (response) => {
         console.log("✅ Connexion réussie :", response);
-        localStorage.setItem('authToken', response.access); // Stocker le token JWT
         this.router.navigate(['/account']);
       },
       error: (error) => {
         console.error("❌ Erreur de connexion :", error);
-        this.errorMessage = "Identifiants incorrects.";
+        this.errorMessage = "Identifiants incorrects ou problème de connexion.";
       }
     });
   }
