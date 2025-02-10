@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -35,6 +35,12 @@ export class ApiService {
   // ✅ Connexion d'un utilisateur
   loginUser(payload: any): Observable<any> {
     return this.http.post(`${this.backendUrl}api/accounts/login/`, payload).pipe(
+      tap((response: any) => {
+        if (response.access && response.refresh) {
+          localStorage.setItem('accessToken', response.access);
+          localStorage.setItem('refreshToken', response.refresh);
+        }
+      }),
       catchError(this.handleError)
     );
   }
@@ -42,17 +48,35 @@ export class ApiService {
   // ✅ Déconnexion de l'utilisateur
   logoutUser(): Observable<any> {
     const refreshToken = localStorage.getItem('refreshToken');
+
     if (!refreshToken) {
       console.error("❌ Aucun refresh token trouvé !");
       return throwError(() => new Error("Aucun token de déconnexion disponible."));
     }
 
+    console.log("🚀 Envoi du refreshToken pour logout :", refreshToken);
+
     return this.http.post(`${this.backendUrl}api/accounts/logout/`, { refresh: refreshToken }).pipe(
+      tap(() => {
+        console.log("✅ Déconnexion réussie !");
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        this.router.navigate(['/login']);
+      }),
       catchError(this.handleError)
     );
   }
 
-  // ✅ Mise à jour des informations utilisateur (PUT /update/)
+  // ✅ Récupérer les informations de l'utilisateur
+  getUserInfo(): Observable<any> {
+    return this.http.get(`${this.backendUrl}api/accounts/user-info/`, {
+      headers: this.getAuthHeaders(),
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  // ✅ Mise à jour des informations utilisateur
   updateUser(payload: any): Observable<any> {
     return this.http.put(`${this.backendUrl}api/accounts/update/`, payload, {
       headers: this.getAuthHeaders(),
@@ -70,16 +94,7 @@ export class ApiService {
     );
   }
 
-  // ✅ Récupérer les informations de l'utilisateur
-  getUserInfo(): Observable<any> {
-    return this.http.get(`${this.backendUrl}api/accounts/user-info/`, {
-      headers: this.getAuthHeaders(),
-    }).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  // ✅ Fonction pour gérer les erreurs HTTP
+  // ✅ Gestion des erreurs
   private handleError(error: any): Observable<never> {
     console.error("❌ Erreur API :", error);
 
@@ -93,48 +108,3 @@ export class ApiService {
     return throwError(() => new Error(error.error?.message || "Une erreur est survenue."));
   }
 }
-
-
-
-/*import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class ApiService {
-  private backendUrl = 'http://127.0.0.1:8000/'; // Base URL de ton backend
-
-  constructor(private http: HttpClient) {}
-
-  // Tester la connexion au backend
-  getData(): Observable<any> {
-    return this.http.get(`${this.backendUrl}test-backend/`); // Remplace '/api/data/' par '/test-backend/'
-  }
-
-  // Enregistrer un nouvel utilisateur
-  registerUser(payload: any): Observable<any> {
-    return this.http.post(`${this.backendUrl}api/accounts/register/`, payload);
-  }
-
-  // Connexion d'un utilisateur
-  loginUser(payload: any): Observable<any> {
-    return this.http.post(`${this.backendUrl}api/accounts/login/`, payload);
-  }
-
-  // Déconnexion d'un utilisateur
-  logoutUser(): Observable<any> {
-    return this.http.post(`${this.backendUrl}api/accounts/logout/`, {}); // POST vide pour la déconnexion
-  }
-
-  // Mise à jour des informations utilisateur
-  updateUser(payload: any): Observable<any> {
-    return this.http.put(`${this.backendUrl}api/accounts/update/`, payload);
-  }
-
-  // Suppression de l'utilisateur
-  deleteUser(): Observable<any> {
-    return this.http.delete(`${this.backendUrl}api/accounts/delete/`);
-  }
-}*/

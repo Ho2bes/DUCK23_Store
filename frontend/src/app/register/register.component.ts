@@ -15,7 +15,8 @@ export class RegisterComponent {
   username: string = '';
   email: string = '';
   password: string = '';
-  errorMessage: string = ''; // 🔴 Remis en place pour correspondre au HTML
+  errorMessage: string = ''; // ✅ Message d'erreur
+  isSubmitting: boolean = false; // ✅ Pour éviter les doubles soumissions
 
   constructor(private apiService: ApiService, private router: Router) {}
 
@@ -25,24 +26,30 @@ export class RegisterComponent {
       return;
     }
 
+    this.isSubmitting = true;
+    this.errorMessage = '';
+
     const payload = {
       username: this.username.trim(),
       email: this.email.trim(),
       password: this.password
     };
 
-    console.log("📤 Données envoyées :", payload); // Vérification des données envoyées
+    console.log("📤 Données envoyées :", payload);
 
     this.apiService.registerUser(payload).subscribe({
       next: () => {
         this.errorMessage = "✅ Inscription réussie ! Redirection...";
         setTimeout(() => {
-          this.router.navigate(['/login']); // ✅ Redirection après 1.5 sec
+          this.router.navigate(['/login']);
         }, 1500);
       },
       error: (error) => {
         console.error("❌ Erreur d'inscription :", error);
         this.errorMessage = error.error?.message || "Une erreur est survenue lors de l'inscription.";
+      },
+      complete: () => {
+        this.isSubmitting = false; // ✅ On réactive le bouton après réponse
       }
     });
   }
