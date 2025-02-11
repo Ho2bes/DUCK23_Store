@@ -1,0 +1,55 @@
+.account-home-container {
+    text-align: center;
+    margin-top: 50px;
+
+    .title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    .auth-section {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    .auth-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 300px;
+    }
+
+    .auth-text {
+		font-family: 'Permanent Marker', cursive;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .btn {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+        border-radius: 10px;
+        min-width: 200px;
+    }
+
+    .btn-primary {
+        background-color: #0097b2;
+        border: none;
+    }
+
+    .btn-outline-primary {
+        border: 2px solid #0097b2;
+        color: #0097b2;
+        background-color: white;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0097b2;
+        color: white;
+    }
+}

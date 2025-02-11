@@ -1,0 +1,51 @@
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 80px;
+    width: auto;
+}
+
+/* Ajustement du texte DUCK23 STORE */
+.logo-titre {
+    height: 40px;
+    width: auto;
+}
+
+.navbar-nav {
+    gap: 20px; /* Espacement entre les éléments de la navbar */
+}
+
+.navbar-nav .nav-link {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #0099cc;
+}
+
+.panier {
+    height: 20px; /* Réduction de la taille du logo panier */
+    width: auto;
+}
+
+.footer {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .footer-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+
+  .footer-link:hover {
+    color: #0099cc;
+    text-decoration: none; /* Suppression du soulignement */
+  }

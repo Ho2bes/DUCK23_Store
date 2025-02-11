@@ -1,0 +1,22 @@
+<div class="account-home-container">
+    <h2 class="title">Bienvenue sur votre espace</h2>
+
+    <div class="auth-section">
+        <div class="auth-box">
+            <p class="auth-text">Tu as déjà un compte ?</p>
+            <p class="auth-text">Bravo, connecte-toi vite !</p>
+			<br>
+            <a [routerLink]="'/login'" routerLinkActive="active" class="btn btn-primary">Se connecter</a>
+			<br>
+			<br>
+        </div>
+        <div class="auth-box">
+            <p class="auth-text">Tu veux créer un compte ?</p>
+            <p class="auth-text">C'est un très bon choix !</p>
+			<br>
+            <a [routerLink]="'/register'" routerLinkActive="active" class="btn btn-outline-primary">Créer un compte</a>
+			<br>
+			<br>
+		</div>
+    </div>
+</div>

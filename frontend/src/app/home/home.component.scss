@@ -1,0 +1,37 @@
+header {
+	display: flex;
+	justify-content: space-between;
+	padding: 10px;
+}
+
+.logo {
+    max-height: 50px; // ✅ Ajouté pour bien intégrer le logo dans la navbar
+}
+
+.hero {
+	text-align: center;
+	padding: 20px;
+}
+
+.nos-produits {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 2.5rem; /* Augmente un peu la taille */
+    text-align: center;
+    margin-top: 20px;
+}
+
+.products {
+	text-align: center;
+
+	.product-grid {
+		display: flex;
+		justify-content: center;
+		gap: 20px;
+	}
+
+	.product img {
+		width: 150px;
+		height: auto;
+		border: none;
+	}
+}

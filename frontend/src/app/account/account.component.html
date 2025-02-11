@@ -1,27 +1,33 @@
-<h2>Mon compte</h2>
+<section class="account-container">
+  <br>
+  <h2 class="account-title">Mon compte</h2>
 
-<!-- ✅ Formulaire de mise à jour -->
-<form (ngSubmit)="onSubmit(updateForm)" #updateForm="ngForm">
-  <label for="first_name">Prénom :</label>
-  <input type="text" name="first_name" [(ngModel)]="user.first_name" placeholder="Prénom" required>
+  <!-- ✅ Formulaire de mise à jour -->
+  <form (ngSubmit)="onSubmit(updateForm)" #updateForm="ngForm" class="account-form">
+    <label for="first_name">Prénom :</label>
+    <input type="text" name="first_name" [(ngModel)]="user.first_name" placeholder="Prénom" required>
 
-  <label for="last_name">Nom :</label>
-  <input type="text" name="last_name" [(ngModel)]="user.last_name" placeholder="Nom" required>
+    <label for="last_name">Nom :</label>
+    <input type="text" name="last_name" [(ngModel)]="user.last_name" placeholder="Nom" required>
 
-  <label for="address">Adresse :</label>
-  <input type="text" name="address" [(ngModel)]="user.address" placeholder="Adresse">
+    <label for="address">Adresse :</label>
+    <input type="text" name="address" [(ngModel)]="user.address" placeholder="Adresse">
 
-  <label for="phone_number">Téléphone :</label>
-  <input type="text" name="phone_number" [(ngModel)]="user.phone_number" placeholder="Téléphone">
+    <label for="phone_number">Téléphone :</label>
+    <input type="text" name="phone_number" [(ngModel)]="user.phone_number" placeholder="Téléphone">
 
-  <button type="submit" [disabled]="updateForm.invalid">Mettre à jour</button>
-</form>
+    <button type="submit" class="btn update-btn" [disabled]="updateForm.invalid">Mettre à jour</button>
+  </form>
 
-<!-- ✅ Message de confirmation -->
-<p *ngIf="message" class="success-message">{{ message }}</p>
+  <!-- ✅ Message de confirmation -->
+  <p *ngIf="message" class="success-message">{{ message }}</p>
 
-<!-- ✅ Boutons actions -->
-<button (click)="modifyPassword()">Modifier mon mot de passe</button>
-<button (click)="modifyDetails()">Modifier mes informations</button>
-<button (click)="logout()">Me déconnecter</button>
-<button (click)="deleteAccount()">Supprimer mon compte</button>
+  <!-- ✅ Boutons actions -->
+  <div class="account-actions">
+    <button (click)="modifyPassword()" class="btn action-btn">Modifier mon mot de passe</button>
+    <button (click)="modifyDetails()" class="btn action-btn">Modifier mes informations</button>
+    <button (click)="logout()" class="btn logout-btn">Me déconnecter</button>
+    <button (click)="deleteAccount()" class="btn delete-btn">Supprimer mon compte</button>
+  </div>
+  <br>
+</section>
