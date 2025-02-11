@@ -1,15 +1,51 @@
-<header>
-  <h1>Hello, {{ title }}</h1>
-  <nav>
-    <a routerLink="/">Home</a> |
-    <a routerLink="/login">Login</a> |
-    <a routerLink="/register">Register</a> |
-    <a routerLink="/account">Account</a>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DUCK23 Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navbar (Header global) -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+          <img src="assets/img/Duck23_sans_nom.png" alt="DUCK23 Logo" class="logo me-2">
+          <img src="assets/img/DUCK23Store_titre.png" alt="DUCK23 Store" class="logo-titre">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto gap-4"> <!-- Ajout de gap pour espacer -->
+              <li class="nav-item"><a class="nav-link" routerLink="/">Accueil</a></li>
+              <li class="nav-item"><a class="nav-link" routerLink="/account-home">Mon compte</a></li>
+              <li class="nav-item d-flex align-items-center">
+                <img src="assets/img/Panier.png" alt="Panier" class="panier me-2"> <!-- Logo du panier réduit -->
+                <a class="nav-link" routerLink="/cart">Mon panier</a>
+              </li>
+          </ul>
+      </div>
   </nav>
-</header>
 
-<hr />
-
-<main>
+  <!-- Contenu des pages -->
   <router-outlet></router-outlet>
-</main>
+
+<!-- Footer (Pied de page global) -->
+<footer class="text-center py-3 border-top footer">
+  <div class="container">
+      <div class="row">
+          <div class="col-md-3"><a href="#" class="footer-link">Mentions légales</a></div>
+          <div class="col-md-3"><a href="#" class="footer-link">CGV</a></div>
+          <div class="col-md-3"><a href="#" class="footer-link">FAQ</a></div>
+          <div class="col-md-3"><a href="#" class="footer-link">Nous contacter</a></div>
+      </div>
+      <p class="mt-3">&copy; Tous droits réservés</p>
+  </div>
+</footer>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

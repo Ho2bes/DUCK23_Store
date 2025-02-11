@@ -1,0 +1,76 @@
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    gap: 50px;
+  }
+
+  .logo-section {
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    width: 200px;
+    height: auto;
+  }
+
+  .brand-name {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .tagline, .helper-text {
+    font-size: 14px;
+  }
+
+  .register-form {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .welcome-text {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 20px;
+    border: 1px solid #0097b2;
+  }
+
+  .register-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #0097b2;
+    border: 1px solid #0097b2;
+    color: white;
+    border-radius: 20px;
+  }
+
+  .register-btn:hover {
+    background-color: #0097b2; /* Empêche le changement de couleur au survol */
+  }
+
+  .login-link {
+	font-family: 'Permanent Marker', cursive;
+
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  .login-link-text {
+	font-family: 'Permanent Marker', cursive;
+    color: #0097b2; /* Définit la couleur du lien "CONNECTE-TOI" */
+    text-decoration: none;
+  }
+
+  .login-link-text:hover {
+    color: #0097b2; /* Empêche le changement de couleur au survol */
+  }

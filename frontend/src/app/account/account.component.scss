@@ -1,0 +1,87 @@
+.account-container {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .account-title {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  .account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .account-form label {
+    font-weight: bold;
+  }
+
+  .account-form input {
+    padding: 10px;
+    border: 1px solid #0097b2;
+    border-radius: 5px;
+  }
+
+  .btn {
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .update-btn {
+    background-color: #0097b2;
+    color: white;
+  }
+
+  .update-btn:hover {
+    background-color: #007a8a;
+	color: white;
+  }
+
+  .account-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .action-btn {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .action-btn:hover {
+	background-color: #0056b3;
+	color: white;
+  }
+
+  .logout-btn {
+    background-color: #ffcc00;
+    color: black;
+  }
+
+  .logout-btn:hover {
+	background-color: #ff9900;
+  }
+
+  .delete-btn {
+    background-color: #ff4444;
+    color: white;
+  }
+
+  .delete-btn:hover {
+    background-color: #cc0000;
+  }
+
+  .success-message {
+    color: green;
+    font-weight: bold;
+    margin-top: 10px;
+  }
