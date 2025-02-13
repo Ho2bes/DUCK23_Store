@@ -34,7 +34,7 @@ export class ApiService {
 
   // ✅ Connexion d'un utilisateur
   loginUser(payload: any): Observable<any> {
-    return this.http.post(`${this.backendUrl}api/accounts/login/`, payload).pipe(
+    return this.http.post(`${this.backendUrl}api/token/`, payload).pipe(
       tap((response: any) => {
         if (response.access && response.refresh) {
           localStorage.setItem('accessToken', response.access);
