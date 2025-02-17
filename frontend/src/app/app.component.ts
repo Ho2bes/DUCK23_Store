@@ -1,30 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router'; // Ajout pour gérer router-outlet
-import { ApiService } from './services/api.service';
+import { RouterModule } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule], // Ajout de RouterModule pour router-outlet
+  imports: [CommonModule, RouterModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'duck23-store';
-  data: any;
+  isAuthenticated: boolean = false;  // ✅ Variable pour suivre l'état de connexion
+  userData: any;  // ✅ Stocke les infos utilisateur
 
-  constructor(private apiService: ApiService) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.apiService.getData().subscribe(
-      (response: any) => {
-        this.data = response;
-        console.log('Données récupérées :', response);
+    // ✅ Vérifie si l'utilisateur est connecté et récupère les infos utilisateur
+    this.authService.isLoggedIn().subscribe({
+      next: (loggedIn) => {
+        this.isAuthenticated = loggedIn;
+        if (loggedIn) {
+          console.log('✅ Utilisateur connecté.');
+        } else {
+          console.warn('🔴 Utilisateur non connecté.');
+        }
       },
-      (error: any) => {
-        console.error('Erreur lors de la récupération des données :', error);
-      }
-    );
+      error: (error) => console.error('❌ Erreur vérification connexion:', error)
+    });
   }
 }

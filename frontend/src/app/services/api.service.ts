@@ -1,108 +1,72 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError, of } from 'rxjs';
+import { catchError, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private backendUrl = 'http://127.0.0.1:8000/';
+  private backendUrl = 'http://localhost:8000/api/accounts/';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
 
-  // ✅ Récupérer les headers avec le token JWT
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('accessToken');
-    return new HttpHeaders({ Authorization: `Bearer ${token}` });
-  }
-
-  // ✅ Vérifier la connexion au backend
-  getData(): Observable<any> {
-    return this.http.get(`${this.backendUrl}test-backend/`).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  // ✅ Enregistrer un nouvel utilisateur
+  // ✅ Enregistrement d'un nouvel utilisateur
   registerUser(payload: any): Observable<any> {
-    return this.http.post(`${this.backendUrl}api/accounts/register/`, payload).pipe(
+    return this.http.post(`${this.backendUrl}register/`, payload, { withCredentials: true }).pipe(
       catchError(this.handleError)
     );
   }
 
-  // ✅ Connexion d'un utilisateur
-  loginUser(payload: any): Observable<any> {
-    return this.http.post(`${this.backendUrl}api/token/`, payload).pipe(
-      tap((response: any) => {
-        if (response.access && response.refresh) {
-          localStorage.setItem('accessToken', response.access);
-          localStorage.setItem('refreshToken', response.refresh);
-        }
-      }),
-      catchError(this.handleError)
-    );
-  }
-
-  // ✅ Déconnexion de l'utilisateur
+  // ✅ Déconnexion utilisateur
   logoutUser(): Observable<any> {
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (!refreshToken) {
-      console.error("❌ Aucun refresh token trouvé !");
-      return throwError(() => new Error("Aucun token de déconnexion disponible."));
-    }
-
-    console.log("🚀 Envoi du refreshToken pour logout :", refreshToken);
-
-    return this.http.post(`${this.backendUrl}api/accounts/logout/`, { refresh: refreshToken }).pipe(
+    return this.http.post(`${this.backendUrl}logout/`, {}, { withCredentials: true }).pipe(
       tap(() => {
         console.log("✅ Déconnexion réussie !");
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
         this.router.navigate(['/login']);
       }),
       catchError(this.handleError)
     );
   }
 
-  // ✅ Récupérer les informations de l'utilisateur
+  // ✅ Récupération des informations utilisateur
   getUserInfo(): Observable<any> {
-    return this.http.get(`${this.backendUrl}api/accounts/user-info/`, {
-      headers: this.getAuthHeaders(),
-    }).pipe(
-      catchError(this.handleError)
+    return this.http.get(`${this.backendUrl}user-info/`, { withCredentials: true }).pipe(
+      catchError(error => this.handleError(error))
     );
   }
 
   // ✅ Mise à jour des informations utilisateur
   updateUser(payload: any): Observable<any> {
-    return this.http.put(`${this.backendUrl}api/accounts/update/`, payload, {
-      headers: this.getAuthHeaders(),
-    }).pipe(
-      catchError(this.handleError)
+    return this.http.put(`${this.backendUrl}update/`, payload, { withCredentials: true }).pipe(
+      catchError(error => this.handleError(error))
     );
   }
 
   // ✅ Suppression du compte utilisateur
   deleteUser(): Observable<any> {
-    return this.http.delete(`${this.backendUrl}api/accounts/delete/`, {
-      headers: this.getAuthHeaders(),
-    }).pipe(
-      catchError(this.handleError)
+    return this.http.delete(`${this.backendUrl}delete/`, { withCredentials: true }).pipe(
+      catchError(error => this.handleError(error))
     );
   }
 
-  // ✅ Gestion des erreurs
-  private handleError(error: any): Observable<never> {
+  // ✅ Gestion des erreurs et tentative de refresh automatique
+  private handleError(error: HttpErrorResponse): Observable<never> {
     console.error("❌ Erreur API :", error);
 
     if (error.status === 401) {
-      console.warn("🔄 Redirection vers la page de connexion...");
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      this.router.navigate(['/login']);
+      console.warn("🔄 Tentative de rafraîchissement du token...");
+      return this.authService.refreshToken().pipe(
+        tap(() => console.log("🔄 Token rafraîchi avec succès.")),
+        switchMap(() => throwError(() => new Error("Veuillez réessayer votre action."))),
+        catchError(() => {
+          console.warn("❌ Refresh token expiré, déconnexion.");
+          this.router.navigate(['/login']);
+          return throwError(() => new Error("Session expirée. Veuillez vous reconnecter."));
+        })
+      );
     }
 
     return throwError(() => new Error(error.error?.message || "Une erreur est survenue."));
