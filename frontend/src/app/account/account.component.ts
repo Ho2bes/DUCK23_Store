@@ -14,62 +14,66 @@ import { ApiService } from '../services/api.service';
 export class AccountComponent {
   user: any = {};
   message: string = '';
+  errorMessage: string = '';
 
   constructor(private apiService: ApiService, private router: Router) {}
 
   ngOnInit() {
     this.apiService.getUserInfo().subscribe({
-      next: (userData) => {
+      next: (userData: any) => {
         this.user = userData;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error("❌ Erreur récupération utilisateur :", err);
-        this.message = "Erreur lors du chargement des informations.";
+        this.errorMessage = "Erreur lors du chargement des informations.";
       }
     });
   }
 
-  // ✅ Ajout de la méthode pour modifier les infos utilisateur
   onSubmit(updateForm: any) {
     if (!updateForm.valid) {
-      this.message = "Tous les champs doivent être remplis.";
+      this.errorMessage = "❌ Tous les champs doivent être remplis.";
       return;
     }
 
     this.apiService.updateUser(this.user).subscribe({
       next: () => {
-        this.message = "Informations mises à jour avec succès !";
+        this.message = "✅ Informations mises à jour avec succès !";
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error("❌ Erreur mise à jour :", err);
-        this.message = "Erreur lors de la mise à jour.";
+        this.errorMessage = "Erreur lors de la mise à jour.";
       }
     });
   }
 
   logout() {
     this.apiService.logoutUser().subscribe({
-      next: (response) => {
-        console.log("✅ Déconnexion réussie :", response);
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken'); // 🔥 Supprime aussi le refreshToken
+      next: () => {
+        console.log("✅ Déconnexion réussie !");
         this.router.navigate(['/login']);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error("❌ Erreur lors de la déconnexion :", error);
       }
     });
   }
 
-
   deleteAccount() {
-    this.apiService.deleteUser().subscribe(() => {
-      localStorage.removeItem('authToken');
-      this.router.navigate(['/']);
-    });
+    if (confirm("Voulez-vous vraiment supprimer votre compte ?")) {
+      this.apiService.deleteUser().subscribe({
+        next: () => {
+          console.log("✅ Compte supprimé !");
+          this.router.navigate(['/register']);
+        },
+        error: (error: any) => {
+          console.error("❌ Erreur lors de la suppression du compte :", error);
+          this.errorMessage = "Impossible de supprimer le compte.";
+        }
+      });
+    }
   }
 
-  // ✅ Ajout des méthodes pour la navigation
   modifyPassword() {
     this.router.navigate(['/modify-password']);
   }

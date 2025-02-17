@@ -12,13 +12,27 @@ import { ApiService } from '../services/api.service';
   styleUrls: ['./modify-password.component.scss']
 })
 export class ModifyPasswordComponent {
+  newPassword: string = '';
+  errorMessage: string = '';
+
   constructor(private apiService: ApiService, private router: Router) {}
 
   onSubmit(form: any) {
-    const payload = form.value;
-    this.apiService.updateUser(payload).subscribe(response => {
-      if (response.success) {
+    if (!form.valid) {
+      this.errorMessage = "❌ Tous les champs doivent être remplis.";
+      return;
+    }
+
+    const payload = { password: this.newPassword };
+
+    this.apiService.updateUser(payload).subscribe({
+      next: () => {
+        console.log("✅ Mot de passe mis à jour !");
         this.router.navigate(['/account']);
+      },
+      error: (error: any) => {
+        console.error("❌ Erreur lors de la mise à jour :", error);
+        this.errorMessage = "Impossible de mettre à jour le mot de passe.";
       }
     });
   }

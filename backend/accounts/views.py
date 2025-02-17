@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,7 +18,8 @@ class RegisterUserView(APIView):
             return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# ✅ Connexion (login)
+
+# ✅ Connexion (login) avec stockage des tokens dans les cookies sécurisés
 class LoginUserView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -25,49 +27,96 @@ class LoginUserView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
 
-        if not username or not password:
-            return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-
         user = authenticate(username=username, password=password)
         if user is not None:
             refresh = RefreshToken.for_user(user)
-            print(refresh.access_token)
-            return Response(
-                {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                    "message": "User logged in successfully.",
-                },
-                status=status.HTTP_200_OK,
+            access_token = refresh.access_token
+
+            response = JsonResponse({"message": "User logged in successfully."})
+            response["Access-Control-Allow-Credentials"] = "true"  # 🔥 Autoriser les credentials
+            response["Access-Control-Allow-Origin"] = "http://localhost:4200"  # 🔥 Ajuster selon le front
+            response.set_cookie(
+                key="accessToken",
+                value=str(access_token),
+                httponly=True,
+                secure=False,
+                samesite="Lax",
+                max_age=900
             )
+            response.set_cookie(
+                key="refreshToken",
+                value=str(refresh),
+                httponly=True,
+                secure=False,
+                samesite="Lax",
+                max_age=86400
+            )
+
+            print("✅ Cookies envoyés :", response.cookies)  # 🔥 Debug
+
+            return response
+
         return Response({"error": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
-# ✅ Déconnexion (logout)
+
+# ✅ Rafraîchissement du token (refresh) basé sur le cookie refreshToken
+class RefreshTokenView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refreshToken")
+
+        if not refresh_token:
+            return Response({"error": "No refresh token provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            token = RefreshToken(refresh_token)
+            new_access_token = token.access_token
+
+            response = JsonResponse({"message": "Token refreshed successfully."})
+            response.set_cookie(
+                key="accessToken",
+                value=str(new_access_token),
+                httponly=True,
+                secure=False,
+                samesite="Lax",
+                max_age=900  # 15 minutes
+            )
+            return response
+        except Exception:
+            return Response({"error": "Invalid or expired refresh token."}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+# ✅ Déconnexion (logout) en supprimant les cookies contenant les tokens
 class LogoutUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        try:
-            refresh_token = request.data.get("refresh")
-            if not refresh_token:
-                return Response({"error": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+        response = JsonResponse({"message": "User logged out successfully."})
 
-            token = RefreshToken(refresh_token)
-            token.blacklist()
+        # ✅ Supprimer les cookies
+        response.delete_cookie("accessToken")
+        response.delete_cookie("refreshToken")
 
-            return Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
+        return response
 
-        except Exception as e:
-            return Response({"error": "Invalid or expired token.", "details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # ✅ Récupération des informations utilisateur (GET /user-info/)
 class UserInfoView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        serializer = UpdateUserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        print("🔍 Cookies reçus dans Django:", request.COOKIES)  # 🔥 Debug
+        print("🔍 Authorization Header:", request.headers.get("Authorization"))  # 🔥 Debug
+        print("🔍 Utilisateur authentifié:", request.user)  # 🔥 Debug
+
+        if request.user.is_authenticated:
+            serializer = UpdateUserSerializer(request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({"error": "Utilisateur non authentifié"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
 
 # ✅ Mise à jour des informations utilisateur (PUT /update/)
 class UpdateUserView(APIView):
@@ -81,6 +130,7 @@ class UpdateUserView(APIView):
             return Response({"message": "User updated successfully."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # ✅ Suppression du compte utilisateur
 class DeleteUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -88,4 +138,10 @@ class DeleteUserView(APIView):
     def delete(self, request):
         user = request.user
         user.delete()
-        return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        response = JsonResponse({"message": "User deleted successfully."})
+
+        # ✅ Supprimer les cookies après suppression de compte
+        response.delete_cookie("accessToken")
+        response.delete_cookie("refreshToken")
+
+        return response
