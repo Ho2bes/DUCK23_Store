@@ -38,7 +38,7 @@ export class LoginComponent {
         console.log("✅ Connexion réussie !");
         this.successMessage = "🎉 Connexion réussie, redirection...";
         setTimeout(() => {
-          this.router.navigate(['/account-home']); // ✅ Redirection après succès
+          this.router.navigate(['/account']); // ✅ Redirection après succès
         }, 1500);
       },
       error: (error) => {

@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private backendUrl = 'http://127.0.0.1:8000/api/accounts/';
+  private backendUrl = 'http://localhost:8000/api/accounts/';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -25,7 +25,7 @@ export class AuthService {
   // ✅ Vérifier si l'utilisateur est connecté (Correction : Ajout de logs)
   isLoggedIn(): Observable<boolean> {
     console.log("🚀 Tentative d’envoi de GET /user-info/ avec withCredentials");
-
+ 
     return this.http.get(`${this.backendUrl}user-info/`, { withCredentials: true }).pipe(
       tap(() => console.log("✅ Utilisateur authentifié")),
       switchMap(() => of(true)),
