@@ -12,19 +12,25 @@
     <div class="row text-center justify-content-center">
         <div class="col-md-4">
             <div class="product">
-                <img src="assets/img/Sweatshirt.png" alt="Sweatshirt" class="img-fluid">
+                <a [routerLink]="['/products', 4]"> <!-- ID = 4 pour Sweatshirt -->
+                    <img src="assets/img/Sweatshirt.png" alt="Sweatshirt" class="img-fluid">
+                </a>
                 <p><b>Sweat-shirt pour rayonner en société</b></p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="product">
-                <img src="assets/img/Mug.png" alt="Mug" class="img-fluid">
+                <a [routerLink]="['/products', 5]"> <!-- ID = 5 pour Mug -->
+                    <img src="assets/img/Mug.png" alt="Mug" class="img-fluid">
+                </a>
                 <p><b>Mug pour boire avec élégance</b></p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="product">
-                <img src="assets/img/Sticker.png" alt="Sticker" class="img-fluid">
+                <a [routerLink]="['/products', 6]"> <!-- ID = 6 pour Sticker -->
+                    <img src="assets/img/Sticker.png" alt="Sticker" class="img-fluid">
+                </a>
                 <p><b>Sticker pour se coller et ne plus se quitter</b></p>
             </div>
         </div>

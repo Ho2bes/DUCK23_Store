@@ -73,12 +73,4 @@ export class AccountComponent {
       });
     }
   }
-
-  modifyPassword() {
-    this.router.navigate(['/modify-password']);
-  }
-
-  modifyDetails() {
-    this.router.navigate(['/modify-details']);
-  }
 }
