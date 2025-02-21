@@ -1,9 +1,0 @@
-<div class="modify-details-container">
-	<h2>Modifier mes informations</h2>
-	<form (ngSubmit)="onSubmit($event)" #modifyDetailsForm="ngForm">
-		<input type="text" name="name" ngModel placeholder="Ton nom" required>
-	  <input type="text" name="email" ngModel placeholder="Ton email" required>
-	  <input type="text" name="phone" ngModel placeholder="Ton téléphone" required>
-	  <button type="submit" [disabled]="modifyDetailsForm.invalid">Confirmer</button>
-	</form>
-  </div>

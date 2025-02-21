@@ -24,7 +24,8 @@ urlpatterns = [
     # URL pour l'administration
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),  # Inclusion des URLs de l'application accounts
-
+    path('api/store/', include('store.urls')),  # Inclusion des URLs de l'application store
+    
     # URLs pour l'authentification avec JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
