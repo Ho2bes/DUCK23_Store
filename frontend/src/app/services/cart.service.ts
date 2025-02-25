@@ -53,6 +53,7 @@ export class CartService {
 
   /** ✅ Récupérer automatiquement le token JWT depuis les cookies */
   private getToken(): string {
+    console.log(document.cookie);
     const token = document.cookie.split('; ')
       .find(row => row.startsWith('accessToken='))
       ?.split('=')[1];
