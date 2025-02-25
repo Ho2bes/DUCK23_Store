@@ -24,7 +24,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 # ✅ Gestion du Panier
 class CartViewSet(viewsets.ViewSet):
-    authentication_classes = [JWTAuthentication, SessionAuthentication]  # 🔒 Vérifie les tokens JWT et la session
+    #authentication_classes = [JWTAuthentication, SessionAuthentication]  # 🔒 Vérifie les tokens JWT et la session
     permission_classes = [permissions.IsAuthenticated]  # 🔒 Accès réservé aux utilisateurs connectés
 
     def get_cart(self, user):

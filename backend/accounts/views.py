@@ -38,7 +38,7 @@ class LoginUserView(APIView):
             response.set_cookie(
                 key="accessToken",
                 value=str(access_token),
-                httponly=True,
+                httponly=False,
                 secure=False,
                 samesite="Lax",
                 max_age=900
@@ -46,7 +46,7 @@ class LoginUserView(APIView):
             response.set_cookie(
                 key="refreshToken",
                 value=str(refresh),
-                httponly=True,
+                httponly=False,
                 secure=False,
                 samesite="Lax",
                 max_age=86400
@@ -77,7 +77,7 @@ class RefreshTokenView(APIView):
             response.set_cookie(
                 key="accessToken",
                 value=str(new_access_token),
-                httponly=True,
+                httponly=False,
                 secure=False,
                 samesite="Lax",
                 max_age=900  # 15 minutes
