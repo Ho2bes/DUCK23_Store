@@ -51,10 +51,30 @@ export class CartService {
     });
   }
 
-  /** ✅ Construire les headers de base sans Authorization */
+  /** ✅ Récupérer automatiquement le token JWT depuis les cookies */
+  private getToken(): string {
+    const token = document.cookie.split('; ')
+      .find(row => row.startsWith('accessToken='))
+      ?.split('=')[1];
+
+    console.log(`🔑 Token récupéré : ${token ? 'Oui' : 'Non'}`);
+    return token || '';
+  }
+
+  /** ✅ Ajouter automatiquement l'Authorization Header avec le token JWT */
   private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
+    const token = this.getToken();
+
+    let headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
+
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    } else {
+      console.warn('⚠️ Aucun token trouvé dans les cookies !');
+    }
+
+    return headers;
   }
 }

@@ -6,6 +6,8 @@ from .models import Product, Cart, CartItem
 from .serializers import ProductSerializer, CartSerializer, CartItemSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 # ✅ Gestion des Produits
 class ProductViewSet(viewsets.ModelViewSet):
@@ -20,9 +22,9 @@ class ProductViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAdminUser]  # Seuls les admins peuvent modifier
         return [permission() for permission in permission_classes]
 
-
 # ✅ Gestion du Panier
 class CartViewSet(viewsets.ViewSet):
+    authentication_classes = [JWTAuthentication, SessionAuthentication]  # 🔒 Vérifie les tokens JWT et la session
     permission_classes = [permissions.IsAuthenticated]  # 🔒 Accès réservé aux utilisateurs connectés
 
     def get_cart(self, user):
@@ -35,9 +37,6 @@ class CartViewSet(viewsets.ViewSet):
         """🔎 Affiche le panier de l'utilisateur connecté"""
         print(f"🔍 Requête panier pour l'utilisateur : {request.user}")  # DEBUG
 
-        if not request.user.is_authenticated:
-            return Response({"error": "Utilisateur non authentifié."}, status=401)
-
         cart = self.get_cart(request.user)
         serializer = CartSerializer(cart)
         return Response(serializer.data)
@@ -45,15 +44,13 @@ class CartViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['post'])
     def add_product(self, request):
         """🛒 Ajoute un produit au panier de l'utilisateur connecté"""
-        if not request.user.is_authenticated:
-            return Response({"error": "Utilisateur non authentifié."}, status=401)
-
-        cart = self.get_cart(request.user)
         product_id = request.data.get('product_id')
         quantity = request.data.get('quantity', 1)
 
         if not product_id:
             return Response({"error": "Aucun produit spécifié."}, status=400)
+
+        cart = self.get_cart(request.user)
 
         try:
             product = get_object_or_404(Product, id=product_id)
@@ -70,23 +67,19 @@ class CartViewSet(viewsets.ViewSet):
                 "cart": CartSerializer(cart).data
             }, status=200)
 
-        except Product.DoesNotExist:
-            return Response({"error": "Produit introuvable."}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
 
     @action(detail=False, methods=['patch'])
     def update_product(self, request):
         """✏️ Met à jour la quantité d’un produit dans le panier"""
-        if not request.user.is_authenticated:
-            return Response({"error": "Utilisateur non authentifié."}, status=401)
-
-        cart = self.get_cart(request.user)
         product_id = request.data.get('product_id')
         quantity = request.data.get('quantity')
 
         if not product_id or quantity is None:
             return Response({"error": "Produit et quantité requis."}, status=400)
+
+        cart = self.get_cart(request.user)
 
         try:
             cart_item = get_object_or_404(CartItem, cart=cart, product_id=product_id)
@@ -103,14 +96,12 @@ class CartViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['delete'])
     def remove_product(self, request):
         """🗑️ Supprime un produit du panier"""
-        if not request.user.is_authenticated:
-            return Response({"error": "Utilisateur non authentifié."}, status=401)
-
-        cart = self.get_cart(request.user)
-        product_id = request.query_params.get('product_id')  # ✅ Corrigé : Prendre `product_id` dans `query_params`
+        product_id = request.query_params.get('product_id')
 
         if not product_id:
             return Response({"error": "Produit requis."}, status=400)
+
+        cart = self.get_cart(request.user)
 
         try:
             cart_item = get_object_or_404(CartItem, cart=cart, product_id=product_id)
@@ -126,9 +117,6 @@ class CartViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['delete'])
     def clear_cart(self, request):
         """🧹 Vide complètement le panier de l'utilisateur"""
-        if not request.user.is_authenticated:
-            return Response({"error": "Utilisateur non authentifié."}, status=401)
-
         cart = self.get_cart(request.user)
         cart.items.all().delete()
         return Response({"message": "Le panier a été vidé."}, status=200)
