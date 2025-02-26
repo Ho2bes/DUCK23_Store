@@ -24,7 +24,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 # ✅ Gestion du Panier
 class CartViewSet(viewsets.ViewSet):
-    #authentication_classes = [JWTAuthentication, SessionAuthentication]  # 🔒 Vérifie les tokens JWT et la session
+    # authentication_classes = [SessionAuthentication]  # Utiliser l'authentification par session
     permission_classes = [permissions.IsAuthenticated]  # 🔒 Accès réservé aux utilisateurs connectés
 
     def get_cart(self, user):
@@ -44,6 +44,9 @@ class CartViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['post'])
     def add_product(self, request):
         """🛒 Ajoute un produit au panier de l'utilisateur connecté"""
+        print(f"DEBUG: Session ID: {request.session.session_key}")
+        print(f"DEBUG: User: {request.user}")
+        print(f"DEBUG: Is authenticated: {request.user.is_authenticated}")
         product_id = request.data.get('product_id')
         quantity = request.data.get('quantity', 1)
 
