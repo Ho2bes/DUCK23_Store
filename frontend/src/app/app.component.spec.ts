@@ -39,7 +39,7 @@ describe('AppComponent', () => {
       expect(data).toEqual(mockData);
     });
 
-    const req = httpMock.expectOne('http://127.0.0.1:8000/test-backend/'); // Correction de l'URL
+    const req = httpMock.expectOne('http://localhost:8000/test-backend/'); // Correction de l'URL
     expect(req.request.method).toBe("GET");
     req.flush(mockData);
   });

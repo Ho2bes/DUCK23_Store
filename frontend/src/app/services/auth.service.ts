@@ -1,6 +1,7 @@
+// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, tap, switchMap, of } from 'rxjs';
+import { Observable, catchError, tap, of, map } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -11,7 +12,7 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  // ✅ Connexion utilisateur
+  // Connexion utilisateur - utilise désormais les sessions
   loginUser(payload: any): Observable<any> {
     return this.http.post(`${this.backendUrl}login/`, payload, { withCredentials: true }).pipe(
       tap(() => {
@@ -22,13 +23,13 @@ export class AuthService {
     );
   }
 
-  // ✅ Vérifier si l'utilisateur est connecté (Correction : Ajout de logs)
+  // Vérifier si l'utilisateur est connecté
   isLoggedIn(): Observable<boolean> {
-    console.log("🚀 Tentative d’envoi de GET /user-info/ avec withCredentials");
- 
+    console.log("🚀 Tentative de vérification de session");
+  
     return this.http.get(`${this.backendUrl}user-info/`, { withCredentials: true }).pipe(
       tap(() => console.log("✅ Utilisateur authentifié")),
-      switchMap(() => of(true)),
+      map(() => true),  // Utilisez map pour transformer la réponse en boolean true
       catchError(() => {
         console.warn("❌ Non connecté");
         return of(false);
@@ -36,17 +37,7 @@ export class AuthService {
     );
   }
 
-
-
-  // ✅ Rafraîchissement du token
-  refreshToken(): Observable<any> {
-    return this.http.post(`${this.backendUrl}refresh-token/`, {}, { withCredentials: true }).pipe(
-      tap(() => console.log("🔄 Token rafraîchi avec succès.")),
-      catchError(this.handleError)
-    );
-  }
-
-  // ✅ Déconnexion utilisateur
+  // Déconnexion utilisateur
   logoutUser(): Observable<any> {
     return this.http.post(`${this.backendUrl}logout/`, {}, { withCredentials: true }).pipe(
       tap(() => {
@@ -57,12 +48,12 @@ export class AuthService {
     );
   }
 
-  // ✅ Gestion des erreurs
+  // Gestion des erreurs
   private handleError(error: any): Observable<never> {
     console.error("❌ Erreur API :", error);
 
     if (error.status === 401) {
-      console.warn("🔄 Redirection vers la page de connexion...");
+      console.warn("❌ Non authentifié, redirection vers la page de connexion...");
       this.router.navigate(['/login']);
     }
 

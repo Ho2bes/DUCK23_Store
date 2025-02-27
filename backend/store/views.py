@@ -18,6 +18,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         """Permet la lecture des produits à tout le monde, mais l’édition seulement aux admins"""
         if self.action in ['list', 'retrieve']:  # GET
             permission_classes = [AllowAny]  # Tout le monde peut voir les produits
+
         else:  # POST, PUT, DELETE
             permission_classes = [IsAdminUser]  # Seuls les admins peuvent modifier
         return [permission() for permission in permission_classes]
@@ -26,6 +27,15 @@ class ProductViewSet(viewsets.ModelViewSet):
 class CartViewSet(viewsets.ViewSet):
     # authentication_classes = [SessionAuthentication]  # Utiliser l'authentification par session
     permission_classes = [permissions.IsAuthenticated]  # 🔒 Accès réservé aux utilisateurs connectés
+    
+    def initialize_request(self, request, *args, **kwargs):
+        # Cette méthode est appelée pour chaque requête entrante
+        print(f"✅ CartViewSet: initialize_request appelé")
+        print(f"✅ User: {request.user}, est authentifié: {request.user.is_authenticated}")
+        print(f"✅ Session key: {request.session.session_key}")
+        
+        # Important: toujours appeler la méthode parent
+        return super().initialize_request(request, *args, **kwargs)
 
     def get_cart(self, user):
         """🔎 Récupère le panier de l'utilisateur ou le crée s'il n'existe pas"""

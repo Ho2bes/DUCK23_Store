@@ -8,7 +8,7 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,localhost').split(',')
 
 # ==========================================================================
 # APPLICATION DEFINITION
@@ -129,6 +129,8 @@ AUTH_PASSWORD_VALIDATORS = [] if DEBUG else [
 # ==========================================================================
 # Session Settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_DOMAIN = None  # Permet d'utiliser le cookie sur tous les sous-domaines
+SESSION_COOKIE_PATH = '/'  # Le cookie est valide pour tous les chemins
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_SAMESITE = "lax"

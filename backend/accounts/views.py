@@ -52,6 +52,7 @@ class UserInfoView(APIView):
 
     def get(self, request):
         print("🔍 Utilisateur authentifié:", request.user)  # 🔥 Debug
+        print(f"✅ Utilisateur {request.user} connecté, session_key: {request.session.session_key}")
 
         if request.user.is_authenticated:
             serializer = UpdateUserSerializer(request.user)
