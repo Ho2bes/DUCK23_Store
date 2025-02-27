@@ -12,6 +12,5 @@ class CookieJWTAuthentication(JWTAuthentication):
         print(auth_header_value)
         request.META['HTTP_AUTHORIZATION'] = auth_header_value
         return super().authenticate(request)
-        #validated_token = self.get_validated_token(access_token)  # Vérifie le token
-        #print(validated_token)
-        #return self.get_user(validated_token), validated_token
+        validated_token = self.get_validated_token(access_token)  # Vérifie le token
+        return self.get_user(validated_token), validated_token

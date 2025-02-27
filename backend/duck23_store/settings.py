@@ -80,7 +80,7 @@ DATABASES = {
 # ✅ REST Framework Configuration (utilisation de CookieJWTAuthentication en premier)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'accounts.authentication.CookieJWTAuthentication',  # Permet de lire le token dans le cookie
+        'accounts.authentication.CookieJWTAuthentication',  # Permet de lire le token dans le cookie
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
