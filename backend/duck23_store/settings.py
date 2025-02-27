@@ -8,7 +8,7 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,localhost').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 # ==========================================================================
 # APPLICATION DEFINITION
@@ -21,13 +21,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Third-party apps
     'django_extensions',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
-    
+
     # Project apps
     'accounts',
     'store',
@@ -51,7 +51,7 @@ MIDDLEWARE = [
 ]
 
 # ==========================================================================
-# URL & TEMPLATE CONFIGURATION  
+# URL & TEMPLATE CONFIGURATION
 # ==========================================================================
 ROOT_URLCONF = 'duck23_store.urls'
 
