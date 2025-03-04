@@ -1,6 +1,7 @@
 .navbar-brand {
     display: flex;
     align-items: center;
+    width: auto;
 }
 
 .logo {
@@ -48,4 +49,28 @@
   .footer-link:hover {
     color: #0099cc;
     text-decoration: none; /* Suppression du soulignement */
+  }
+
+  @media (max-width: 767px) {
+    .navbar-brand {
+        width:80%;
+    }
+
+    .logo {
+        height: auto;
+        width: 20%;
+    }
+
+    .logo-titre {
+        height: auto;
+        width: 78%;
+    }
+
+    .navbar {
+        display: flex;
+    }
+
+    .navbar-toggler {
+        width: 15%;
+    }
   }
