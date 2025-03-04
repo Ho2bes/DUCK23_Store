@@ -4,6 +4,7 @@
     align-items: center;
     height: 100vh;
     gap: 50px;
+    flex-direction: row;
   }
 
   .logo-section {
@@ -72,4 +73,12 @@
 
   .register-link-text:hover {
     color: #0097b2; /* Empêche le changement de couleur au survol */
+  }
+
+  @media (max-width: 768px) {
+    .login-container {
+      flex-direction: column;
+      width: 98%;
+      margin: auto;
+    }
   }
