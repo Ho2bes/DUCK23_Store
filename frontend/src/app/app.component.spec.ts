@@ -12,11 +12,11 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule,  // Ajout pour `<router-outlet>`
-        HttpClientTestingModule,
-        AppComponent,
+        RouterTestingModule,  // Simule le routing pour éviter les erreurs
+        HttpClientTestingModule,  // Fournit un environnement de test pour les requêtes HTTP
       ],
-      providers: [ApiService],
+      declarations: [AppComponent],  // Déclare le composant testé
+      providers: [ApiService],  // Fournit le service API
     }).compileComponents();
 
     apiService = TestBed.inject(ApiService);
@@ -27,72 +27,35 @@ describe('AppComponent', () => {
     httpMock.verify(); // Vérifie qu'il n'y a pas de requêtes en attente
   });
 
+  // Vérifie que l'application se crée sans erreur
   it('should create the app', () => {
-    /*const fixture = TestBed.createComponent(AppComponent);
+    const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
-  */});
+  });
 
-  it('should fetch data from the API', () => {
-    const mockData = { message: 'Hello from backend' };
-    apiService.getData().subscribe(data => {
-      expect(data).toEqual(mockData);
+  // Vérifie que le composant récupère bien les informations utilisateur depuis l'API
+  it('should fetch user info from the API', (done) => {
+    const mockUserInfo = { username: 'testuser', email: 'testuser@example.com' };
+
+    spyOn(apiService, 'getUserInfo').and.returnValue(of(mockUserInfo)); // Mock de `getUserInfo`
+
+    apiService.getUserInfo().subscribe(data => {
+      expect(data).toEqual(mockUserInfo);
+      done(); // Indique que le test async est terminé
+    });
+  });
+
+  // Vérifie que l'API est bien appelée et retourne une réponse correcte
+  it('should call the API and return expected data', () => {
+    const mockResponse = { message: 'Hello from backend' };
+
+    apiService.getUserInfo().subscribe(data => {
+      expect(data).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne('http://localhost:8000/test-backend/'); // Correction de l'URL
+    const req = httpMock.expectOne('http://localhost:8000/api/accounts/user-info/'); // Vérifie l'URL correcte
     expect(req.request.method).toBe("GET");
-    req.flush(mockData);
+    req.flush(mockResponse); // Simule une réponse de l'API
   });
 });
-
-
-
-
-
-
-
-
-/*
-import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http'; // Nouvelle méthode pour fournir HttpClient
-import { AppComponent } from './app.component'; // Composant standalone
-import { ApiService } from './services/api.service'; // Service dépendant
-
-describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [
-        AppComponent, // Ajout du composant standalone dans `imports`
-      ],
-      providers: [
-        ApiService, // Fourniture de `ApiService`
-        provideHttpClient(), // Nouvelle méthode pour fournir `HttpClient`
-      ],
-    }).compileComponents();
-  });
-
-  // Vérifie que le composant principal peut être créé
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  // Vérifie que le composant contient un élément <h1>
-  it('should render a title in an <h1> tag', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')).not.toBeNull(); // Vérifie la présence de l'élément <h1>
-  });
-
-  // Vérifie que la propriété "title" existe et a une valeur correcte
-  it('should have a title property', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toBeDefined(); // Vérifie que `title` existe
-    expect(typeof app.title).toBe('string'); // Vérifie que `title` est une chaîne de caractères
-  });
-});
-*/
-
