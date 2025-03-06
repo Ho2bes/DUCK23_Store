@@ -14,11 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
+from django.http import JsonResponse
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from .views import home_view, test_view # Import de la vue d'accueil
+
+def health_check(request):
+    return JsonResponse({"status": "ok"}, status=200)
 
 urlpatterns = [
     # URL pour l'administration
@@ -31,4 +34,6 @@ urlpatterns = [
 
        # Endpoint de test
     path('test-backend/', test_view, name='test_backend'),
+
+     path('api/healthcheck/', health_check, name='health_check'),
 ]
