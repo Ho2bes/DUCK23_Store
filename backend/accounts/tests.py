@@ -16,12 +16,12 @@ class UserTests(TestCase):
         payload = {
             'username': 'newuser',
             'email': 'newuser@example.com',
-            'password': 'newpassword1'  # Ajout d'un chiffre
+            'password': 'newpassword1'
         }
         response = self.client.post('/api/accounts/register/', payload, content_type="application/json")
 
         if response.status_code != status.HTTP_201_CREATED:
-            print("🔴 Erreur API:", response.data)  # Debug
+            print("🔴 Erreur API:", response.data)
 
         self.assertIn(response.status_code, [status.HTTP_201_CREATED, status.HTTP_200_OK])
 
@@ -57,7 +57,7 @@ class UserTests(TestCase):
             print("La réponse n'est pas en JSON ou est vide.")
 
         if response.status_code not in [status.HTTP_200_OK, status.HTTP_204_NO_CONTENT]:
-            print("🔴 Erreur API:", response.data)  # Debug
+            print("🔴 Erreur API:", response.data)
 
 
         self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_204_NO_CONTENT])
