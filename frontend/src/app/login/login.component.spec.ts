@@ -15,7 +15,7 @@ describe('LoginComponent', () => {
         provideHttpClient(),
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { queryParams: { returnUrl: '/dashboard' } } } // ✅ Correction ici
+          useValue: { snapshot: { queryParams: { returnUrl: '/dashboard' } } } 
         }
       ]
     }).compileComponents();
