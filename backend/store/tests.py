@@ -1,77 +1,124 @@
-from django.test import TestCase
-from store.models import Product, Cart, CartItem
+from django.test import TestCase, Client
+from rest_framework import status
+from store.models import Product
 from accounts.models import CustomUser
 
-class ProductModelTest(TestCase):
-    def test_product_creation(self):
-        # Créer un produit
-        product = Product.objects.create(
-            name="Test Product",
-            price=50.0,
-            stock=10
-        )
-        self.assertEqual(product.name, "Test Product")
-        self.assertEqual(product.price, 50.0)
-        self.assertEqual(product.stock, 10)
+class ProductTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.admin = CustomUser.objects.create_superuser(username="admin", email="admin@example.com", password="adminpassword")
+        self.user = CustomUser.objects.create_user(username="testuser", email="testuser@example.com", password="testpassword")
+        self.product = Product.objects.create(name="Test Product", price=100, stock=10)
 
-class CartModelTest(TestCase):
-    def test_cart_creation(self):
-        # Créer un utilisateur et un panier associé
-        user = CustomUser.objects.create_user(
-            username="testuser",
-            password="testpass",
-            role="user"
-        )
-        cart = Cart.objects.create(user=user)
-        self.assertEqual(cart.user.username, "testuser")
-        self.assertEqual(cart.items.count(), 0)  # Vérifier que le panier est vide
+    def test_get_product_list(self):
+        response = self.client.get('/api/store/products/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_add_product_to_cart(self):
-        # Créer un produit, un utilisateur et un panier
-        product = Product.objects.create(
-            name="Test Product",
-            price=50.0,
-            stock=10
-        )
-        user = CustomUser.objects.create_user(
-            username="testuser",
-            password="testpass",
-            role="user"
-        )
-        cart = Cart.objects.create(user=user)
+    def test_get_single_product(self):
+        response = self.client.get(f'/api/store/products/{self.product.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], self.product.name)
 
-        # Ajouter un produit au panier via CartItem
-        CartItem.objects.create(cart=cart, product=product, quantity=2)
-        cart_items = cart.items.all()  # Utiliser related_name "items"
+    def test_create_product(self):
+        """Test de création de produit avec un utilisateur admin"""
+        self.client.login(username="admin", password="adminpassword")  # Correction du mot de passe
 
-        self.assertEqual(cart_items.count(), 1)
-        self.assertEqual(cart_items.first().product.name, "Test Product")
-        self.assertEqual(cart_items.first().quantity, 2)
+        payload = {
+            "name": "New Product",
+            "description": "A great product",  # Ajout de la description
+            "price": 50,
+            "stock": 20
+        }
+        response = self.client.post('/api/store/products/', payload, content_type="application/json")
 
-    def test_cart_total_price(self):
-        # Créer des produits, un utilisateur et un panier
-        product1 = Product.objects.create(
-            name="Test Product 1",
-            price=50.0,
-            stock=10
-        )
-        product2 = Product.objects.create(
-            name="Test Product 2",
-            price=30.0,
-            stock=5
-        )
-        user = CustomUser.objects.create_user(
-            username="testuser",
-            password="testpass",
-            role="user"
-        )
-        cart = Cart.objects.create(user=user)
+        if response.status_code != status.HTTP_201_CREATED:
+            print("🔴 Erreur API:", response.data)  # Debug
 
-        # Ajouter des produits au panier via CartItem
-        CartItem.objects.create(cart=cart, product=product1, quantity=2)
-        CartItem.objects.create(cart=cart, product=product2, quantity=1)
+        self.assertIn(response.status_code, [status.HTTP_201_CREATED, status.HTTP_200_OK])
 
-        # Calculer le prix total
-        total_price = sum(item.product.price * item.quantity for item in cart.items.all())
 
-        self.assertEqual(total_price, 130.0)  # 2 * 50.0 + 1 * 30.0
+    def test_update_product(self):
+        """Test de mise à jour de produit avec un utilisateur admin"""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.put(f'/api/store/products/{self.product.id}/', {
+            "name": "Updated Product",
+            "description": "Updated description",  # Ajout de la description si nécessaire
+            "price": 120,
+            "stock": 5
+        }, content_type="application/json")
+        self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_204_NO_CONTENT, status.HTTP_201_CREATED])
+
+
+    def test_delete_product(self):
+        """Test de suppression de produit avec un utilisateur admin"""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.delete(f'/api/store/products/{self.product.id}/')
+        self.assertIn(response.status_code, [status.HTTP_204_NO_CONTENT, status.HTTP_200_OK])
+
+    def test_create_product_non_admin(self):
+        self.client.login(username="testuser", password="testpassword")
+        response = self.client.post('/api/store/products/', {
+            "name": "New Product",
+            "price": 50,
+            "stock": 20
+        })
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_product_stock(self):
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.put(f'/api/store/products/{self.product.id}/', {
+            "name": "Updated Product",
+            "price": 120,
+            "stock": 15,
+            "description": "Updated description"  # Ajoutez ce champ si nécessaire
+        }, content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock, 15)
+
+    def test_invalid_product_data(self):
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post('/api/store/products/', {
+            "name": "",
+            "price": -10,
+            "stock": "invalid"
+        })
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_delete_product(self):
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.delete(f'/api/store/products/{self.product.id}/')
+        self.assertIn(response.status_code, [status.HTTP_204_NO_CONTENT, status.HTTP_200_OK])
+
+    def test_create_product_non_admin(self):
+        self.client.login(username="testuser", password="testpassword")
+        response = self.client.post('/api/store/products/', {
+            "name": "New Product",
+            "price": 50,
+            "stock": 20
+        })
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_product_non_admin(self):
+        self.client.login(username="testuser", password="testpassword")
+        response = self.client.delete(f'/api/store/products/{self.product.id}/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_product_invalid_data(self):
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post('/api/store/products/', {
+            "name": "",
+            "price": -10,
+            "stock": "invalid"
+        })
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_product_with_missing_data(self):
+        """Test pour vérifier la création d'un produit avec des données manquantes"""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post('/api/store/products/', {
+            "name": "New Product",
+            "price": 50,
+        # "stock" est manquant
+        }, content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

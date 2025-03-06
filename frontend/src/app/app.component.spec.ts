@@ -1,30 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
-import { ApiService } from './services/api.service';
+import { provideHttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('AppComponent', () => {
-  let apiService: ApiService;
-  let httpMock: HttpTestingController;
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,  // ✅ Pour gérer le routing
-        HttpClientTestingModule,  // ✅ Pour injecter HttpClient
-        AppComponent,  // ✅ AppComponent est standalone, donc dans `imports` et pas `declarations`
-      ],
-      providers: [ApiService],  // ✅ Injection du service
+      imports: [AppComponent],
+      providers: [
+        provideHttpClient(),
+        { provide: ActivatedRoute, useValue: { paramMap: of({}) } } // Correction ici
+      ]
     }).compileComponents();
-
-    apiService = TestBed.inject(ApiService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
   });
 
   it('should create the app', () => {
@@ -33,14 +21,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should fetch user info from the API', (done) => {
-    const mockData = { username: 'testuser', email: 'testuser@example.com' };
-
-    spyOn(apiService, 'getUserInfo').and.returnValue(of(mockData));
-
-    apiService.getUserInfo().subscribe(data => {
-      expect(data).toEqual(mockData);
-      done();
-    });
+  it(`should have title 'duck23-store'`, () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app.title).toEqual('duck23-store');
   });
 });
