@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
     this.authService.isLoggedIn().subscribe({
       next: (loggedIn) => {
         this.isAuthenticated = loggedIn;
+        // ✅ Récupère les infos utilisateur
         if (loggedIn) {
           console.log('✅ Utilisateur connecté.');
         } else {

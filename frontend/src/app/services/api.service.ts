@@ -22,7 +22,7 @@ export class ApiService {
 
   // Déconnexion utilisateur
   logoutUser(): Observable<any> {
-    return this.http.post(`${this.backendUrl}logout/`, {}, { withCredentials: true }).pipe(
+    return this.http.post(`${this.backendUrl}logout/`, {}, { withCredentials: true }).pipe( // ✅ Envoie une requête POST pour se déconnecter (avec les cookies) whitcredentials: true permet de conserver les cookies
       tap(() => {
         console.log("✅ Déconnexion réussie !");
         this.router.navigate(['/login']);

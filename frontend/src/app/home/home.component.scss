@@ -1,37 +1,37 @@
 header {
-	display: flex;
-	justify-content: space-between;
-	padding: 10px;
+	display: flex; // Permet de mettre les éléments les uns à côté des autres
+	justify-content: space-between; // Permet de mettre les éléments le plus à gauche et le plus à droite possible
+	padding: 10px; // Ajoute un padding de 10px
 }
 
 .logo {
-    max-height: 50px;
+    max-height: 50px; // Définit la hauteur maximale du logo à 50px
 }
 
 .hero {
-	text-align: center;
-	padding: 20px;
+	text-align: center; // Centre le texte
+	padding: 20px; // Ajoute un padding de 20px
 }
 
 .nos-produits {
-    font-family: 'Permanent Marker', cursive;
-    font-size: 2.5rem; 
-    text-align: center;
-    margin-top: 20px;
+    font-family: 'Permanent Marker', cursive; // Change la police du texte
+    font-size: 2.5rem; // Change la taille du texte
+    text-align: center; // Centre le texte
+    margin-top: 20px; // Ajoute une marge en haut de 20px
 }
 
 .products {
-	text-align: center;
+	text-align: center; // Centre le texte
 
 	.product-grid {
-		display: flex;
-		justify-content: center;
+		display: flex; // Permet de mettre les éléments les uns à côté des autres
+		justify-content: center; // Permet de centrer les éléments
 		gap: 20px;
 	}
 
 	.product img {
-		width: 150px;
-		height: auto;
-		border: none;
+		width: 150px; // Définit la largeur de l'image à 150px
+		height: auto; // Définit la hauteur de l'image automatiquement
+		border: none; // Enlève la bordure de l'image
 	}
 }
