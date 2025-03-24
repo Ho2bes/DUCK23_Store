@@ -1,76 +1,76 @@
-.navbar-brand {
-    display: flex;
-    align-items: center;
-    width: auto;
+.navbar-brand { // Style de la navbar
+    display: flex; // Permet de mettre les éléments les uns à côté des autres
+    align-items: center; // Permet de centrer les éléments verticalement
+    width: auto; // Définit la largeur de l'image automatiquement
 }
 
-.logo {
-    height: 80px;
-    width: auto;
+.logo {// Style du logo
+    height: 80px; // Définit la hauteur du logo à 80px
+    width: auto; // Définit la largeur de l'image automatiquement
 }
 
 /* Ajustement du texte DUCK23 STORE */
-.logo-titre {
-    height: 40px;
-    width: auto;
+.logo-titre { // Ajustement du texte DUCK23 STORE
+    height: 40px; // Définit la hauteur du texte à 40px
+    width: auto; // Définit la largeur de l'image automatiquement
 }
 
 .navbar-nav {
     gap: 20px; /* Espacement entre les éléments de la navbar */
 }
 
-.navbar-nav .nav-link {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #333;
+.navbar-nav .nav-link { // Style des liens de la navbar
+    font-size: 1.1rem; // Taille du texte
+    font-weight: bold;// Met le texte en gras
+    color: #333; // Couleur du texte
 }
 
-.navbar-nav .nav-link:hover {
-    color: #0099cc;
+.navbar-nav .nav-link:hover { // Changement de couleur au survol
+    color: #0099cc; // Changement de couleur au survol
 }
 
 .panier {
     height: 20px; /* Réduction de la taille du logo panier */
-    width: auto;
+    width: auto; // Définit la largeur de l'image automatiquement
 }
 
-.footer {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #333;
+.footer { // Style du footer
+    font-size: 1.1rem; // Taille du texte
+    font-weight: bold; //   Met le texte en gras
+    color: #333; // Couleur du texte
   }
 
-  .footer-link {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
+  .footer-link { // Style des liens du footer
+    text-decoration: none; // Suppression du soulignement
+    color: #333; // Couleur du texte
+    font-weight: bold; // Met le texte en gras
   }
 
-  .footer-link:hover {
-    color: #0099cc;
+  .footer-link:hover { // Changement de couleur au survol
+    color: #0099cc; // Changement de couleur au survol
     text-decoration: none; /* Suppression du soulignement */
   }
 
-  @media (max-width: 767px) {
-    .navbar-brand {
-        width:80%;
+  @media (max-width: 767px) { /* Pour les écrans de taille inférieure à 767px */
+    .navbar-brand { // Permet de centrer le logo
+        width:80%; // Définit la largeur du logo à 80%
     }
 
     .logo {
-        height: auto;
-        width: 20%;
+        height: auto; // Définit la hauteur de l'image automatiquement
+        width: 20%; //  Définit la largeur de l'image à 20%
     }
 
-    .logo-titre {
-        height: auto;
-        width: 78%;
+    .logo-titre { // Ajustement du texte DUCK23 STORE
+        height: auto; // Définit la hauteur de l'image automatiquement
+        width: 78%; //  Définit la largeur de l'image à 78%
     }
 
-    .navbar {
-        display: flex;
+    .navbar { // Permet de centrer les éléments de la navbar
+        display: flex; // Permet de mettre les éléments les uns à côté des autres
     }
 
-    .navbar-toggler {
-        width: 15%;
+    .navbar-toggler { // Permet de centrer le bouton de la navbar
+        width: 15%; // Définit la largeur du bouton à 15%
     }
   }

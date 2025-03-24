@@ -1,3 +1,4 @@
+# Django imports the necessary tools to create a Django administration interface
 from django.apps import AppConfig
 
 
