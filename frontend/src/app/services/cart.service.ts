@@ -3,6 +3,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+/*
+  Service pour gérer le panier de l'utilisateur
+  Ce service gère les opérations liées au panier, comme l'ajout, la mise à jour, la suppression d'articles et la récupération du panier.
+  Il utilise HttpClient pour les requêtes HTTP.
+*/
 @Injectable({
   providedIn: 'root'
 })
@@ -21,8 +26,8 @@ export class CartService {
   addToCart(productId: number, quantity: number): Observable<any> {
     console.log(`📤 Ajout au panier: Produit ID ${productId}, Quantité: ${quantity}`);
     console.log('Cookies disponibles:', document.cookie);    return this.http.post(
-      `${this.apiUrl}add_product/`, 
-      { product_id: productId, quantity }, 
+      `${this.apiUrl}add_product/`,
+      { product_id: productId, quantity },
       { withCredentials: true }
     );
   }

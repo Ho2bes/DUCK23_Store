@@ -5,6 +5,11 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
+/*
+  Service pour interagir avec l'API backend
+  Ce service gère les requêtes HTTP pour l'enregistrement, la connexion, la récupération des informations utilisateur, la mise à jour et la suppression du compte.
+  Il utilise HttpClient pour les requêtes HTTP et Router pour la navigation après certaines actions.
+*/
 @Injectable({
   providedIn: 'root',
 })

@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+/*
+  Service pour gérer les produits
+  Ce service permet de récupérer la liste des produits et les détails d'un produit spécifique.
+  Il utilise HttpClient pour les requêtes HTTP.
+*/
 @Injectable({
   providedIn: 'root'
 })

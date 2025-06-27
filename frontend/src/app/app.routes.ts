@@ -1,19 +1,24 @@
-import { Routes, provideRouter } from '@angular/router'; // ✅ Import de Routes et provideRouter pour gérer les routes
-import { HomeComponent } from './home/home.component'; // ✅ Import du composant HomeComponent
-import { LoginComponent } from './login/login.component'; // ✅ Import du composant LoginComponent
-import { RegisterComponent } from './register/register.component'; // ✅ Import du composant RegisterComponent
-import { AccountComponent } from './account/account.component'; // ✅ Import du composant AccountComponent
-import { AccountHomeComponent } from './account-home/account-home.component'; // ✅ Import du composant AccountHomeComponent
-import { authGuard } from './auth.guard'; // ✅ Import du garde d'authentification
-import { CartComponent } from './cart/cart.component'; // ✅ Import du composant CartComponent
-import { ProductsComponent } from './products/products.component'; // ✅ Import du composant ProductsComponent
+import { Routes, provideRouter } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+import { AccountComponent } from './account/account.component';
+import { AccountHomeComponent } from './account-home/account-home.component';
+import { authGuard } from './auth.guard';
+import { CartComponent } from './cart/cart.component';
+import { ProductsComponent } from './products/products.component';
 
-// ✅ Définition des routes de l'application
+/*
+  Définition des routes de l'application Angular.
+  Chaque route est associée à un composant spécifique et peut être protégée par un guard d'authentification.
+  Les routes publiques sont accessibles sans authentification, tandis que les routes protégées nécessitent une connexion.
+*/
+
 export const appRoutes: Routes = [
-  { path: '', component: HomeComponent }, // Route par défaut
-  { path: 'account-home', component: AccountHomeComponent }, // Route protégée
-  { path: 'login', component: LoginComponent }, // Route publique
-  { path: 'register', component: RegisterComponent }, // Route publique
+  { path: '', component: HomeComponent },
+  { path: 'account-home', component: AccountHomeComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
 
   // Routes protégées
   { path: 'account', component: AccountComponent, canActivate: [authGuard] },
@@ -26,4 +31,4 @@ export const appRoutes: Routes = [
   { path: '**', redirectTo: '' }
 ];
 
-export const appRouting = provideRouter(appRoutes); // ✅ Création du service de routage avec les routes définies
+export const appRouting = provideRouter(appRoutes); 

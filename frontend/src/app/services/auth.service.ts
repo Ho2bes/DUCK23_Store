@@ -4,6 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, tap, of, map } from 'rxjs';
 import { Router } from '@angular/router';
 
+/*
+  Service pour gérer l'authentification des utilisateurs
+  Ce service gère la connexion, la déconnexion et la vérification de l'état de connexion des utilisateurs.
+  Il utilise HttpClient pour les requêtes HTTP et Router pour la navigation après certaines actions.
+*/
 @Injectable({
   providedIn: 'root', // Ce service est disponible dans toute l'application
 })

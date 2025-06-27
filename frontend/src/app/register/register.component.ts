@@ -4,6 +4,11 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { ApiService } from '../services/api.service';
 
+/*
+  Composant pour la page d'inscription
+  Ce composant gère l'inscription des nouveaux utilisateurs, y compris la validation des champs, l'envoi des données d'inscription et la gestion des messages d'erreur ou de succès.
+  Il utilise le service ApiService pour interagir avec l'API d'inscription et Router pour la navigation après une inscription réussie.
+*/
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -15,8 +20,7 @@ export class RegisterComponent {
   username: string = '';
   email: string = '';
   password: string = '';
-  errorMessage: string = ''; // ✅ Message d'erreur
-  isSubmitting: boolean = false; // ✅ Pour éviter les doubles soumissions
+  isSubmitting: boolean = false;
 
   constructor(private apiService: ApiService, private router: Router) {}
 
@@ -49,7 +53,7 @@ export class RegisterComponent {
         this.errorMessage = error.error?.message || "Une erreur est survenue lors de l'inscription.";
       },
       complete: () => {
-        this.isSubmitting = false; // ✅ On réactive le bouton après réponse
+        this.isSubmitting = false;
       }
     });
   }

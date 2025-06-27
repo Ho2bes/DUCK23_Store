@@ -3,6 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
+/*
+  Composant principal de l'application Angular
+  Ce composant gère l'état de connexion de l'utilisateur et affiche les informations utilisateur.
+  Il utilise le service AuthService pour vérifier si l'utilisateur est connecté et récupérer ses informations.
+*/
 @Component({
   selector: 'app-root',
   standalone: true,

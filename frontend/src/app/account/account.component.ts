@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { ApiService } from '../services/api.service';
 
+// on crée un composant Angular pour gérer le compte utilisateur, y compris la récupération, la mise à jour, la déconnexion et la suppression du compte.';
 @Component({
   selector: 'app-account',
   standalone: true,

@@ -1,60 +1,71 @@
-# On importe des outils nécessaires pour créer des sérialiseurs avec Django REST Framework (DRF) dans backend/accounts/serializers.py:
-from rest_framework import serializers # On importe le module serializers de Django REST Framework (DRF)
-from .models import CustomUser # On importe notre modèle CustomUser
-import re # On importe le module re pour les expressions régulières (regex) dans Python (pour valider les données)
+from rest_framework import serializers
+from .models import CustomUser
+import re
 
-# ✅ Serializer pour l'inscription (uniquement `username`, `email`, `password`)
-class RegisterSerializer(serializers.ModelSerializer): # On crée une classe RegisterSerializer qui hérite de la classe ModelSerializer de DRF
-    password = serializers.CharField(write_only=True) # On définit un champ pour le mot de passe (write_only=True pour ne pas l'afficher)
+"""
+Serializer pour l'inscription (uniquement `username`, `email`, `password`)
+On crée une classe RegisterSerializer pour gérer l'inscription des utilisateurs
+Cette classe hérite de serializers.ModelSerializer de Django REST Framework (DRF)
+On utilise le modèle CustomUser pour définir les champs à sérialiser
 
-    class Meta: # On définit la classe Meta pour spécifier le modèle et les champs à sérialiser
-        model = CustomUser # On spécifie le modèle CustomUser
-        fields = ['username', 'email', 'password'] # On spécifie les champs à sérialiser
+"""
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
 
-    def validate_email(self, value): # On définit une méthode pour valider l'adresse email
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'password']
+
+    def validate_email(self, value):
         """
         Valide que l'email est au bon format.
         """
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", value): # On vérifie si l'adresse email est au bon format
-            raise serializers.ValidationError("L'adresse email est invalide.") # On lève une exception si l'adresse email est invalide
-        return value # On retourne la valeur si elle est valide
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", value):
+            raise serializers.ValidationError("L'adresse email est invalide.")
+        return value
 
-    def validate_password(self, value): # On définit une méthode pour valider le mot de passe
+    def validate_password(self, value):
         """
         Valide que le mot de passe répond aux exigences.
         """
-        if len(value) < 8: # On vérifie si le mot de passe contient au moins 8 caractères
-            raise serializers.ValidationError("Le mot de passe doit contenir au moins 8 caractères.") # On lève une exception si le mot de passe est trop court
-        if not any(char.isdigit() for char in value): # On vérifie si le mot de passe contient au moins un chiffre
-            raise serializers.ValidationError("Le mot de passe doit contenir au moins un chiffre.") # On lève une exception si le mot de passe ne contient pas de chiffre
-        if not any(char.isalpha() for char in value): # On vérifie si le mot de passe contient au moins une lettre
-            raise serializers.ValidationError("Le mot de passe doit contenir au moins une lettre.") # On lève une exception si le mot de passe ne contient pas de lettre
-        return value # On retourne la valeur si elle est valide
+        if len(value) < 8:
+            raise serializers.ValidationError("Le mot de passe doit contenir au moins 8 caractères.")
+        if not any(char.isdigit() for char in value):
+            raise serializers.ValidationError("Le mot de passe doit contenir au moins un chiffre.")
+        if not any(char.isalpha() for char in value):
+            raise serializers.ValidationError("Le mot de passe doit contenir au moins une lettre.")
+        return value
 
-    def validate_username(self, value): # On définit une méthode pour valider le nom d'utilisateur
+    def validate_username(self, value):
         """
         Valide que le nom d'utilisateur est unique.
         """
-        if CustomUser.objects.filter(username=value).exists(): # On vérifie si le nom d'utilisateur existe déjà dans la base de données
-            raise serializers.ValidationError("Ce nom d'utilisateur est déjà pris.") # On lève une exception si le nom d'utilisateur est déjà pris
-        return value # On retourne la valeur si elle est unique
+        if CustomUser.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Ce nom d'utilisateur est déjà pris.")
+        return value
 
-    def create(self, validated_data): # On définit une méthode pour créer un utilisateur après validation des données
+    def create(self, validated_data):
         """
         Crée un utilisateur après validation des données.
         """
-        user = CustomUser.objects.create_user( # On crée un utilisateur avec la méthode create_user du modèle CustomUser
-            username=validated_data['username'], # On récupère le nom d'utilisateur
-            email=validated_data['email'], # On récupère l'adresse email
-            password=validated_data['password'] # On récupère le mot de passe
+        user = CustomUser.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
         )
-        return user # On retourne l'utilisateur créé
+        return user
 
-# ✅ Serializer pour la mise à jour du profil (l'utilisateur peut modifier ses infos)
+"""
+Serializer pour la mise à jour du profil (l'utilisateur peut modifier ses infos)
+On crée une classe UpdateUserSerializer pour gérer la mise à jour des informations de l'utilisateur
+Cette classe hérite aussi de serializers.ModelSerializer de DRF
+On utilise le modèle CustomUser pour définir les champs modifiables
+
+"""
 class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'address', 'phone_number', 'email']  # Ajout des champs modifiables
+        fields = ['first_name', 'last_name', 'address', 'phone_number', 'email']
 
     def validate_email(self, value):
         """
