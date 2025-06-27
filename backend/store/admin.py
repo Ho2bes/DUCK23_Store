@@ -1,3 +1,9 @@
+"""
+on enregistre les modèles dans l'interface d'administration de Django
+on utilise admin.site.register pour chaque modèle que l'on souhaite gérer via l'admin
+on importe les modèles Product, Cart, Order, OrderItem et CartItem
+
+"""
 from django.contrib import admin
 from .models import Product, Cart, Order, OrderItem, CartItem
 

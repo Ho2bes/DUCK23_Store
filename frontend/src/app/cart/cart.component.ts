@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../services/cart.service';
 
+// on crée un composant Angular pour gérer le panier de l'utilisateur, y compris le chargement des articles, la mise à jour des quantités, la suppression d'articles et le calcul du total.
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, FormsModule], // ✅ Ajout des modules nécessaires
+  imports: [CommonModule, FormsModule], // on importe forms et common pour les fonctionnalités de formulaire et les directives Angular
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss']
 })

@@ -32,7 +32,7 @@ urlpatterns = [
     # Page d'accueil
     path('', home_view, name='home'),
 
-       # Endpoint de test
+    # Endpoint de test
     path('test-backend/', test_view, name='test_backend'),
 
      path('api/healthcheck/', health_check, name='health_check'),

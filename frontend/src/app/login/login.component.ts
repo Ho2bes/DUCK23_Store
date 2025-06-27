@@ -5,6 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+// Composant pour la page de connexion
+// Ce composant gère la connexion des utilisateurs, y compris la validation des champs, l'envoi des données de connexion et la gestion des messages d'erreur ou de succès.
+// Il utilise le service AuthService pour interagir avec l'API de connexion et Router pour la navigation après une connexion réussie.
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -21,7 +24,7 @@ export class LoginComponent {
   returnUrl: string = '';
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
