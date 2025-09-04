@@ -1,7 +1,7 @@
 # on importe les modules nécessaires
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser #
+from .models import CustomUser
 
 # On crée une classe pour personnaliser l'interface d'administration de notre modèle CustomUser
 class CustomUserAdmin(UserAdmin):
@@ -16,4 +16,3 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
 
 admin.site.register(CustomUser, CustomUserAdmin)
-
