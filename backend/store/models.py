@@ -72,16 +72,23 @@ class Order(models.Model):
         ('canceled', 'Annulée'),
     ]
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE) # Champ pour l'utilisateur associé à la commande
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    price_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"Order {self.id} by {self.user.username} ({self.status})"
 
     def get_total_price(self):
+        """Toujours calculé à la volée (utile pour comparer avec price_amount)."""
         return sum(item.get_total_price() for item in self.items.all())
 
+    def recompute_total(self):
+        total = sum(item.quantity * item.price_amount for item in self.items.all())
+        if total != self.price_amount:
+            self.price_amount = total
+            self.save(update_fields=['price_amount'])
 
     def confirm_order(self):
         for item in self.items.all():
@@ -99,10 +106,15 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    price_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in Order {self.order.id}"
 
-
     def get_total_price(self):
-        return self.product.price * self.quantity 
+        return self.product.price * self.quantity  # prix actuel (peut changer)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['order', 'product'], name='uniq_order_product'),
+        ]
