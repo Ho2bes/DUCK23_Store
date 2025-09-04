@@ -10,14 +10,17 @@ on importe la classe JWTAuthentication pour l'authentification JWT.
 """
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from .models import Product, Cart, CartItem
+from .models import Product, Cart, CartItem, Order, OrderItem
 from .serializers import ProductSerializer, CartSerializer, CartItemSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.db import transaction
+
 
 """
 On crée une vue pour la déconnexion (logout) des utilisateurs
@@ -152,3 +155,70 @@ class CartViewSet(viewsets.ViewSet):
         cart = self.get_cart(request.user)
         cart.items.all().delete()
         return Response({"message": "Le panier a été vidé."}, status=200)
+
+    @action(detail=False, methods=['post'])
+    def checkout(self, request):
+        """
+        Crée une commande (Order) à partir du panier de l'utilisateur connecté.
+        - Copie les articles du panier vers des OrderItem (snapshot du prix).
+        - Calcule le total de la commande.
+        - Vide le panier après validation.
+        """
+
+        cart = self.get_cart(request.user)  # récupère le panier
+        if not cart.items.exists():
+            return Response({"error": "Panier vide."}, status=400)
+
+        try:
+            with transaction.atomic():  # sécurise la transaction
+
+                # 1. Créer une nouvelle commande
+                order = Order.objects.create(
+                    user=request.user,
+                    status="pending",
+                    price_amount=0  # sera recalculé juste après
+                )
+
+                # 2. Copier les articles du panier dans la commande
+                for item in cart.items.select_related('product'):
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        quantity=item.quantity,
+                        price_amount=item.product.price  # snapshot du prix produit
+                    )
+
+                # 3. Calculer le total de la commande
+                order.recompute_total()
+
+                # 4. Vider le panier
+                cart.items.all().delete()
+
+            # 5. Retourner la commande en réponse
+            return Response({
+                "message": "✅ Commande créée avec succès",
+                "order_id": order.id,
+                "total": str(order.price_amount),
+                "status": order.status,
+                "created_at": order.created_at,
+            }, status=201)
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return Response({"error": str(e)}, status=500)
+
+    @action(detail=False, methods=['get'])
+    def my_orders(self, request):
+        """ Retourne toutes les commandes de l'utilisateur connecté"""
+        orders = Order.objects.filter(user=request.user).order_by('-created_at')
+        data = [
+            {
+                "order_number": order.order_number,
+                "status": order.status,
+                "total": str(order.price_amount),
+                "created_at": order.created_at,
+            }
+            for order in orders
+        ]
+        return Response(data, status=status.HTTP_200_OK)

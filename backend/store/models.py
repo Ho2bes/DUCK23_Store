@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model # On importe la fonction get_user_model pour récupérer le modèle d'utilisateur personnalisé
 
@@ -64,6 +65,11 @@ On crée un modèle de commande pour gérer les commandes passées par les utili
 Ce modèle va nous permettre de gérer les commandes avec des informations comme l'utilisateur, la date de
 création, le statut, etc.
 """
+# store/models.py
+from django.db import models
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'En attente'),
@@ -77,11 +83,26 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     price_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    # Étape 1 (migration data) : nullable/non-unique le temps de remplir les anciennes lignes
+    order_number = models.CharField(max_length=30, editable=False, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        """
+        Génère un numéro de commande lisible et unique basé sur la date + la PK.
+        On fait un 1er save pour obtenir self.pk, puis on met à jour order_number.
+        """
+        creating = self.pk is None
+        super().save(*args, **kwargs)  # 1er save pour avoir la PK
+        if creating and not self.order_number:
+            date_part = (self.created_at or timezone.now()).strftime("%Y%m%d")
+            self.order_number = f"CMD-{date_part}-{self.pk:06d}"
+            super().save(update_fields=['order_number'])
+
     def __str__(self):
-        return f"Order {self.id} by {self.user.username} ({self.status})"
+        return f"Order {self.order_number or self.pk} by {self.user.username} ({self.status})"
 
     def get_total_price(self):
-        """Toujours calculé à la volée (utile pour comparer avec price_amount)."""
+        """Calcul à la volée (utile pour comparaison avec price_amount)."""
         return sum(item.get_total_price() for item in self.items.all())
 
     def recompute_total(self):
@@ -94,6 +115,7 @@ class Order(models.Model):
         for item in self.items.all():
             item.product.reduce_stock(item.quantity)
         self.save()
+
 
 
 """
