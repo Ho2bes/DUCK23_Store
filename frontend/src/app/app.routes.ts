@@ -7,6 +7,8 @@ import { AccountHomeComponent } from './account-home/account-home.component';
 import { authGuard } from './auth.guard';
 import { CartComponent } from './cart/cart.component';
 import { ProductsComponent } from './products/products.component';
+import { MyOrdersComponent } from './my-orders/my-orders.component';
+import { OrderComponent } from './order/order.component';
 
 /*
   Définition des routes de l'application Angular.
@@ -23,6 +25,9 @@ export const appRoutes: Routes = [
   // Routes protégées
   { path: 'account', component: AccountComponent, canActivate: [authGuard] },
   { path: 'cart', component: CartComponent, canActivate: [authGuard] },
+  { path: 'my-orders', component: MyOrdersComponent, canActivate: [authGuard] },
+  { path: 'order', component: OrderComponent, canActivate: [authGuard] }, // confirmation (sans id)
+  { path: 'order/:id', component: OrderComponent, canActivate: [authGuard] },
 
   // Route publique
   { path: 'products/:id', component: ProductsComponent },
@@ -31,4 +36,4 @@ export const appRoutes: Routes = [
   { path: '**', redirectTo: '' }
 ];
 
-export const appRouting = provideRouter(appRoutes); 
+export const appRouting = provideRouter(appRoutes);
