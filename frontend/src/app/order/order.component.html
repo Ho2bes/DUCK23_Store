@@ -2,7 +2,7 @@
   <h2 *ngIf="mode === 'confirm'">Confirmation de commande</h2>
   <h2 *ngIf="mode === 'detail'">Détails de la commande</h2>
 
-  <!-- ===== Mode Confirmation ===== -->
+  <!-- ===== Mode Confirmation (calqué sur Cart) ===== -->
   <div *ngIf="mode === 'confirm'">
     <div *ngIf="loadingConfirm">Chargement…</div>
 
@@ -32,34 +32,59 @@
         </ng-template>
       </section>
 
-      <!-- 🛒 Panier -->
+      <!-- 🛒 Récap panier -->
       <section class="card">
-        <h3>Mon panier</h3>
-
-        <div *ngIf="cart && cart.items.length > 0; else emptyCart">
-          <ul class="lines">
-            <li *ngFor="let it of cart.items">
-              {{ it.product.name }} — {{ it.quantity }} ×
-              {{ it.product.price | currency:'EUR':'symbol':'1.2-2':'fr' }}
-            </li>
-          </ul>
+        <ng-container *ngIf="cartItems?.length; else emptyCart">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th>Prix</th>
+                <th>Qté</th>
+                <th>Sous-total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of cartItems">
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }} €</td>
+                <td>
+                  <input
+                    type="number"
+                    [ngModel]="item.quantity"
+                    (ngModelChange)="updateQuantity(item.product.id, $event)"
+                    [ngModelOptions]="{ standalone: true }"
+                    min="1"
+                    class="form-control"
+                    style="width: 70px;"
+                  />
+                </td>
+                <td>{{ item.product.price * item.quantity }} €</td>
+                <td>
+                  <button class="dk-btn dk-btn--danger" (click)="remove(item.product.id)" aria-label="Supprimer">❌</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
           <p class="total">
             <strong>Total :</strong>
-            {{ cartTotalNum | currency:'EUR':'symbol':'1.2-2':'fr' }}
+            {{ getTotal() }} €
           </p>
 
           <button
             class="dk-btn dk-btn--primary dk-btn--block"
             (click)="confirmOrder()"
-            [disabled]="cart.items.length === 0">
+            [disabled]="!cartItems.length"
+          >
             Confirmer ma commande
           </button>
 
           <div class="actions" style="margin-top:.5rem;">
             <a routerLink="/cart" class="dk-btn dk-btn--ghost">← Retour au panier</a>
           </div>
-        </div>
+        </ng-container>
 
         <ng-template #emptyCart>
           <p>Votre panier est vide.</p>
@@ -69,7 +94,7 @@
     </ng-container>
   </div>
 
-  <!-- ===== Mode Détail ===== -->
+  <!-- ===== Mode Détail (commande passée) ===== -->
   <div *ngIf="mode === 'detail'">
     <div *ngIf="loadingDetail">Chargement…</div>
 
@@ -80,15 +105,16 @@
 
       <section class="card">
         <p><strong>Commande :</strong> {{ o.order_number }}</p>
-        <p><strong>Total :</strong> {{ o.total | currency:'EUR':'symbol':'1.2-2':'fr' }}</p>
+        <p><strong>Total :</strong> {{ (+o.total || 0) | currency:'EUR':'symbol':'1.2-2':'fr' }}</p>
         <p><strong>Date :</strong> {{ o.created_at | date:'short' }}</p>
         <p><strong>Statut :</strong> {{ o.status }}</p>
 
         <h3>Produits</h3>
         <ul class="lines">
-          <li *ngFor="let item of o.items">
-            {{ item.product.name }} — {{ item.quantity }} ×
-            {{ item.price_amount | currency:'EUR':'symbol':'1.2-2':'fr' }}
+          <li *ngFor="let item of (o.items || [])">
+            {{ item?.product?.name || '—' }} — {{ item?.quantity || 0 }} ×
+            {{ unitPrice(item) | currency:'EUR':'symbol':'1.2-2':'fr' }} =
+            {{ lineTotal(item) | currency:'EUR':'symbol':'1.2-2':'fr' }}
           </li>
         </ul>
       </section>
