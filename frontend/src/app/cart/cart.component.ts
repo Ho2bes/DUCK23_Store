@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../services/cart.service';
+import { Router } from '@angular/router';
 
 // on crée un composant Angular pour gérer le panier de l'utilisateur, y compris le chargement des articles, la mise à jour des quantités, la suppression d'articles et le calcul du total.
 @Component({
@@ -14,7 +15,7 @@ import { CartService } from '../services/cart.service';
 export class CartComponent implements OnInit {
   cart: any[] = [];
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadCart();
@@ -45,4 +46,13 @@ export class CartComponent implements OnInit {
   getTotal(): number {
     return this.cart.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
   }
+
+
+goToOrder() {
+  this.router.navigate(['/order']);        // confirmation (sans id)
+}
+
+goToMyOrders() {
+  this.router.navigate(['/my-orders']);    // historique
+}
 }

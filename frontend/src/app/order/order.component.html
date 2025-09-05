@@ -1,0 +1,61 @@
+<h2 *ngIf="mode === 'confirm'">Confirmation de commande</h2>
+<h2 *ngIf="mode === 'detail'">Détails de la commande</h2>
+
+<!-- ===== Mode Confirmation ===== -->
+<div *ngIf="mode === 'confirm'">
+  <div *ngIf="loadingConfirm">Chargement…</div>
+
+  <ng-container *ngIf="!loadingConfirm">
+    <section>
+      <h3>Mes coordonnées</h3>
+      <div *ngIf="me; else missingMe">
+        <p><strong>Nom :</strong> {{ me?.first_name || '' }} {{ me?.last_name || '' }}</p>
+        <p><strong>Email :</strong> {{ me?.email }}</p>
+        <p *ngIf="me?.phone_number"><strong>Téléphone :</strong> {{ me?.phone_number }}</p>
+        <div *ngIf="me?.address">
+          <p><strong>Adresse :</strong></p>
+          <p style="white-space:pre-line">{{ me?.address }}</p>
+        </div>
+        <button (click)="goEditProfile()">Modifier mes informations</button>
+      </div>
+      <ng-template #missingMe>
+        <p>Impossible de charger vos informations.</p>
+        <button (click)="goEditProfile()">Compléter mon profil</button>
+      </ng-template>
+    </section>
+
+    <section style="margin-top:1rem">
+      <h3>Mon panier</h3>
+      <div *ngIf="cart; else emptyCart">
+        <ul>
+          <li *ngFor="let it of cart?.items">
+            {{ it.product.name }} — {{ it.quantity }} × {{ it.product.price_amount }} €
+          </li>
+        </ul>
+        <p><strong>Total :</strong> {{ cartTotal }} €</p>
+        <button (click)="confirmOrder()">Confirmer ma commande</button>
+      </div>
+      <ng-template #emptyCart>
+        <p>Votre panier est vide.</p>
+      </ng-template>
+    </section>
+  </ng-container>
+</div>
+
+<!-- ===== Mode Détail ===== -->
+<div *ngIf="mode === 'detail'">
+  <div *ngIf="loadingDetail">Chargement…</div>
+
+  <div *ngIf="!loadingDetail && order as o">
+    <p><strong>Commande :</strong> {{ o.order_number }}</p>
+    <p><strong>Total :</strong> {{ o.total }} €</p>
+    <p><strong>Date :</strong> {{ o.created_at | date:'short' }}</p>
+
+    <h3>Produits</h3>
+    <ul>
+      <li *ngFor="let item of o.items">
+        {{ item.product.name }} — {{ item.quantity }} × {{ item.price_amount }} €
+      </li>
+    </ul>
+  </div>
+</div>

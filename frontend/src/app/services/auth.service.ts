@@ -9,6 +9,19 @@ import { Router } from '@angular/router';
   Ce service gère la connexion, la déconnexion et la vérification de l'état de connexion des utilisateurs.
   Il utilise HttpClient pour les requêtes HTTP et Router pour la navigation après certaines actions.
 */
+
+export interface Me {
+  id: number;
+  username: string;
+  email: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  role: 'user' | 'admin';
+  created_at: string;   // Django enverra une date ISO → string côté TS
+  updated_at: string;
+  address?: string | null;
+  phone_number?: string | null;
+}
 @Injectable({
   providedIn: 'root', // Ce service est disponible dans toute l'application
 })
@@ -17,6 +30,9 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}   // Le constructeur est une fonction spéciale qui est appelée quand le service est créé
 
+  getMe(): Observable<Me> {
+    return this.http.get<Me>(`${this.backendUrl}user-info/`, { withCredentials: true });
+  }
 
   // Connexion utilisateur - utilise désormais les sessions
   loginUser(payload: any): Observable<any> {

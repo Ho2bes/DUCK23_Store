@@ -210,10 +210,10 @@ class CartViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def my_orders(self, request):
-        """ Retourne toutes les commandes de l'utilisateur connecté"""
         orders = Order.objects.filter(user=request.user).order_by('-created_at')
         data = [
             {
+                "id": order.id,  # <--- ajouté
                 "order_number": order.order_number,
                 "status": order.status,
                 "total": str(order.price_amount),
@@ -222,3 +222,27 @@ class CartViewSet(viewsets.ViewSet):
             for order in orders
         ]
         return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path=r'orders/(?P<order_id>\d+)')
+    def order_detail(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        items = [
+            {
+                "product": {
+                    "id": it.product.id,
+                    "name": it.product.name,
+                    "price_amount": str(it.price_amount),
+                },
+                "quantity": it.quantity,
+                "price_amount": str(it.price_amount),
+            }
+            for it in order.items.select_related('product')
+        ]
+        return Response({
+            "id": order.id,
+            "order_number": order.order_number,
+            "total": str(order.price_amount),
+            "status": order.status,
+            "created_at": order.created_at,
+            "items": items,
+        }, status=200)

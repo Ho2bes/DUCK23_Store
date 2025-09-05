@@ -1,0 +1,13 @@
+<h2>Mes commandes</h2>
+
+<div *ngIf="loading">Chargement...</div>
+
+<ul *ngIf="!loading && orders.length > 0" style="list-style:none; padding:0;">
+  <li *ngFor="let order of orders" (click)="viewOrder(order.id)" style="cursor:pointer; padding:.5rem 0; border-bottom:1px solid #eee;">
+    <div><strong>{{ order.order_number }}</strong></div>
+    <div>{{ order.total }} € — {{ order.created_at | date:'short' }}</div>
+    <small>Statut : {{ order.status }}</small>
+  </li>
+</ul>
+
+<p *ngIf="!loading && orders.length === 0">Aucune commande trouvée.</p>
