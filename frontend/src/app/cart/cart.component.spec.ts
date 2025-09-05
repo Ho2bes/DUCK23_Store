@@ -24,7 +24,7 @@ describe('CartComponent', () => {
     component = fixture.componentInstance;
     cartService = TestBed.inject(CartService) as jasmine.SpyObj<CartService>;
 
-    cartService.getCart.and.returnValue(of([{ id: 1, name: 'Test Product' }]));
+    cartService.getCart.and.returnValue(of([{ id: 1, name: 'Test Product', price: '10.00' }]));
 
     fixture.detectChanges();
   });
