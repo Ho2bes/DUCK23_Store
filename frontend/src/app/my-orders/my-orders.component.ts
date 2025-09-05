@@ -8,6 +8,7 @@ import { MyOrder, OrderService } from '../services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './my-orders.component.html',
+  styleUrls: ['./my-orders.component.scss']
 })
 export class MyOrdersComponent implements OnInit {
   orders: MyOrder[] = [];

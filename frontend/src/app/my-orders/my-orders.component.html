@@ -1,9 +1,20 @@
 <h2>Mes commandes</h2>
 
+<p class="order-info">
+  <span class="warn">⚠️</span>
+  L’envoi de la commande sera effectué <strong>après paiement sur
+  <a href="https://www.helloasso.com/associations/duck23" target="_blank" rel="noopener noreferrer">HelloAsso</a></strong>.
+  Merci d’indiquer votre <strong>numéro de commande</strong> lors du paiement.
+</p>
+
+<div class="actions">
+  <a routerLink="/cart" class="dk-btn dk-btn--ghost">← Retour au panier</a>
+</div>
+
 <div *ngIf="loading">Chargement...</div>
 
-<ul *ngIf="!loading && orders.length > 0" style="list-style:none; padding:0;">
-  <li *ngFor="let order of orders" (click)="viewOrder(order.id)" style="cursor:pointer; padding:.5rem 0; border-bottom:1px solid #eee;">
+<ul *ngIf="!loading && orders.length > 0" class="order-list">
+  <li *ngFor="let order of orders" (click)="viewOrder(order.id)">
     <div><strong>{{ order.order_number }}</strong></div>
     <div>{{ order.total }} € — {{ order.created_at | date:'short' }}</div>
     <small>Statut : {{ order.status }}</small>

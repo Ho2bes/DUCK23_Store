@@ -36,11 +36,12 @@ export class CartComponent implements OnInit {
   }
 
   /** ❌ Supprimer un article du panier */
-  removeItem(cartItemId: number): void {
-    this.cartService.removeCartItem(cartItemId).subscribe(() => {
-      this.loadCart();
-    });
-  }
+remove(productId: number) {
+  this.cartService.removeCartItem(productId).subscribe({
+    next: () => this.loadCart(), // ou this.load()
+    error: (e) => console.error(e),
+  });
+}
 
   /** 🏷️ Calculer le total */
   getTotal(): number {
