@@ -1,6 +1,7 @@
+// src/app/order/order.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { AuthService, Me } from '../services/auth.service';
 import { CartResponse, CartService } from '../services/cart.service';
 import { OrderDetail, OrderService } from '../services/order.service';
@@ -8,25 +9,20 @@ import { OrderDetail, OrderService } from '../services/order.service';
 @Component({
   selector: 'app-order',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, CurrencyPipe],
+  imports: [CommonModule, RouterModule],
   templateUrl: './order.component.html',
   styleUrls: ['./order.component.scss'],
 })
 export class OrderComponent implements OnInit {
   mode: 'confirm' | 'detail' = 'confirm';
 
-  // Confirmation
+  // ===== CONFIRMATION =====
   me?: Me | null;
   cart?: CartResponse | null;
+  cartTotalNum: number = 0;
   loadingConfirm = false;
 
-  /** Lignes prêtes pour l'affichage (types simples) */
-  displayItems: { name: string; qty: number; price: number }[] = [];
-
-  /** Total numérique prêt à afficher (pour le pipe currency) */
-  cartTotalNum = 0;
-
-  // Détail
+  // ===== DÉTAIL =====
   order?: OrderDetail | null;
   loadingDetail = false;
 
@@ -49,7 +45,7 @@ export class OrderComponent implements OnInit {
     }
   }
 
-  /** Charge infos utilisateur + panier et prépare les données d'affichage */
+  // ===== Charger données confirmation =====
   private loadConfirmData() {
     this.loadingConfirm = true;
 
@@ -62,24 +58,20 @@ export class OrderComponent implements OnInit {
       next: (cart) => {
         this.cart = cart;
 
-        // Map des items -> types sûrs pour le template
-        this.displayItems = (this.cart?.items ?? []).map((it: any) => ({
-          name: String(it?.product?.name ?? ''),
-          qty: Number(it?.quantity ?? 0),
-          price: Number(it?.product?.price ?? 0), // nombre pour CurrencyPipe
-        }));
+        // 🔎 Debug JSON panier
+        console.log('🧺 cart in /order:', this.cart);
 
-        // Total numérique
-        this.cartTotalNum = this.displayItems.reduce(
-          (sum, li) => sum + li.qty * li.price,
-          0
-        );
+        // ✅ Calcul du total côté front
+        this.cartTotalNum = (this.cart?.items ?? []).reduce((sum: number, it: any) => {
+          const price = Number(it?.product?.price ?? 0);
+          const qty = Number(it?.quantity ?? 0);
+          return sum + price * qty;
+        }, 0);
 
         this.loadingConfirm = false;
       },
       error: () => {
         this.cart = null;
-        this.displayItems = [];
         this.cartTotalNum = 0;
         this.loadingConfirm = false;
       },
@@ -89,14 +81,17 @@ export class OrderComponent implements OnInit {
   confirmOrder() {
     this.orderService.checkout().subscribe({
       next: (res) => {
-        if (res?.id) this.router.navigate(['/order', res.id]);
-        else this.router.navigate(['/my-orders']);
+        if (res?.id) {
+          this.router.navigate(['/order', res.id]);
+        } else {
+          this.router.navigate(['/my-orders']);
+        }
       },
       error: () => alert('Impossible de valider la commande pour le moment.'),
     });
   }
 
-  /** Détail d'une commande */
+  // ===== Charger détail commande =====
   private fetchOrderDetail(id: number) {
     this.loadingDetail = true;
     this.orderService.getOrderById(id).subscribe({
@@ -110,6 +105,7 @@ export class OrderComponent implements OnInit {
     });
   }
 
+  // ===== Navigation =====
   goEditProfile() {
     this.router.navigate(['/account']);
   }

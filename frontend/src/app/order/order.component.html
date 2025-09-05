@@ -7,6 +7,7 @@
     <div *ngIf="loadingConfirm">Chargement…</div>
 
     <ng-container *ngIf="!loadingConfirm">
+      <!-- 🧍 Infos utilisateur -->
       <section class="card">
         <h3>Mes coordonnées</h3>
 
@@ -31,14 +32,15 @@
         </ng-template>
       </section>
 
+      <!-- 🛒 Panier -->
       <section class="card">
         <h3>Mon panier</h3>
 
-        <div *ngIf="cart; else emptyCart">
+        <div *ngIf="cart && cart.items.length > 0; else emptyCart">
           <ul class="lines">
-            <li *ngFor="let it of displayItems">
-              {{ it.name }} — {{ it.qty }} ×
-              {{ it.price | currency:'EUR':'symbol':'1.2-2':'fr' }}
+            <li *ngFor="let it of cart.items">
+              {{ it.product.name }} — {{ it.quantity }} ×
+              {{ it.product.price | currency:'EUR':'symbol':'1.2-2':'fr' }}
             </li>
           </ul>
 
@@ -50,7 +52,7 @@
           <button
             class="dk-btn dk-btn--primary dk-btn--block"
             (click)="confirmOrder()"
-            [disabled]="displayItems.length === 0">
+            [disabled]="cart.items.length === 0">
             Confirmer ma commande
           </button>
 
