@@ -33,10 +33,12 @@ class CartItemSerializer(serializers.ModelSerializer):
     # Total de la ligne (quantité × prix unitaire), calculé dynamiquement
     line_total = serializers.SerializerMethodField()
 
+    # Champs à inclure dans la sérialisation. il inclut les champs du modèle + les champs calculés. cela sert à afficher les détails des articles du panier.
     class Meta:
         model = CartItem
         fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'line_total']
 
+    # Méthode pour calculer le total de la ligne. il sert à afficher le total de chaque article dans le panier.
     def get_line_total(self, obj: CartItem) -> str:
         qty = Decimal(obj.quantity or 0)
         price = Decimal(obj.product.price or 0)

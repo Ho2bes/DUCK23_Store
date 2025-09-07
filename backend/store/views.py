@@ -51,6 +51,11 @@ représenter les produits dans le panier.
 
 """
 
+""" classe qui gère les opérations du panier
+Il permet de récupérer le panier, d'ajouter, de mettre à jour et de supprimer des articles, ainsi que de vider le panier.
+Il utilise les sérialiseurs CartSerializer et CartItemSerializer pour convertir les données du panier en JSON et vice versa.
+Il utilise des actions personnalisées pour chaque opération du panier.
+"""
 class CartViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -62,22 +67,24 @@ class CartViewSet(viewsets.ViewSet):
         return super().initialize_request(request, *args, **kwargs)
 
     def get_cart(self, user):
-        """🔎 Récupère le panier de l'utilisateur ou le crée s'il n'existe pas"""
+        """ Récupère le panier de l'utilisateur ou le crée s'il n'existe pas"""
         cart, created = Cart.objects.get_or_create(user=user)
         return cart
 
+# On crée une action personnalisée pour afficher le panier de l'utilisateur connecté
     @action(detail=False, methods=['get'])
     def my_cart(self, request):
-        """🔎 Affiche le panier de l'utilisateur connecté"""
+        """ Affiche le panier de l'utilisateur connecté"""
         print(f"🔍 Requête panier pour l'utilisateur : {request.user}")
 
         cart = self.get_cart(request.user)
         serializer = CartSerializer(cart)
         return Response(serializer.data)
 
+# On crée une action personnalisée pour ajouter un produit au panier de l'utilisateur connecté
     @action(detail=False, methods=['post'])
     def add_product(self, request):
-        """🛒 Ajoute un produit au panier de l'utilisateur connecté"""
+        """ Ajoute un produit au panier de l'utilisateur connecté"""
         print(f"DEBUG: Session ID: {request.session.session_key}")
         print(f"DEBUG: User: {request.user}")
         print(f"DEBUG: Is authenticated: {request.user.is_authenticated}")
@@ -88,6 +95,7 @@ class CartViewSet(viewsets.ViewSet):
 
         cart = self.get_cart(request.user)
 
+# On ajoute ou met à jour l'item dans le panier. le try except gère les erreurs potentielles.
         try:
             product = get_object_or_404(Product, id=product_id)
 
@@ -115,7 +123,7 @@ class CartViewSet(viewsets.ViewSet):
             return Response({"error": "Produit et quantité requis."}, status=400)
 
         cart = self.get_cart(request.user)
-
+# On met à jour la quantité de l'item dans le panier. le try except gère les erreurs potentielles.
         try:
             cart_item = get_object_or_404(CartItem, cart=cart, product_id=product_id)
             cart_item.quantity = int(quantity)
@@ -130,7 +138,7 @@ class CartViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['delete']) # On crée une action personnalisée pour supprimer un produit du panier
     def remove_product(self, request):
-        """🗑️ Supprime un produit du panier"""
+        """ Supprime un produit du panier"""
         product_id = request.query_params.get('product_id')
 
         if not product_id:
@@ -169,6 +177,7 @@ class CartViewSet(viewsets.ViewSet):
         if not cart.items.exists():
             return Response({"error": "Panier vide."}, status=400)
 
+#atomic c'est une fonction en django qui permet de faire des transactions en base de données. si une partie de la transaction échoue, tout est annulé.
         try:
             with transaction.atomic():  # sécurise la transaction
 
@@ -208,12 +217,16 @@ class CartViewSet(viewsets.ViewSet):
             traceback.print_exc()
             return Response({"error": str(e)}, status=500)
 
+# On crée une vue pour gérer les commandes des utilisateurs
+# Cette vue hérite de la classe ViewSet de Django REST Framework (DRF)
+# Cette vue permet aux utilisateurs de consulter leurs commandes et les détails d’une commande spécifique.
+# On utilise le modèle Order pour représenter les commandes et le modèle OrderItem pour représenter les articles de commande.
     @action(detail=False, methods=['get'])
     def my_orders(self, request):
         orders = Order.objects.filter(user=request.user).order_by('-created_at')
         data = [
             {
-                "id": order.id,  # <--- ajouté
+                "id": order.id,
                 "order_number": order.order_number,
                 "status": order.status,
                 "total": str(order.price_amount),
@@ -223,6 +236,7 @@ class CartViewSet(viewsets.ViewSet):
         ]
         return Response(data, status=status.HTTP_200_OK)
 
+# On crée une action personnalisée pour afficher les détails d’une commande spécifique. le order_id est passé dans l’URL.
     @action(detail=False, methods=['get'], url_path=r'orders/(?P<order_id>\d+)')
     def order_detail(self, request, order_id):
         order = get_object_or_404(Order, id=order_id, user=request.user)

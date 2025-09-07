@@ -130,12 +130,15 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     price_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
+    # Méthode pour afficher l'item de commande. il sert à afficher les détails de chaque article dans une commande.
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in Order {self.order.id}"
 
+    # Méthode pour calculer le prix total de l'item de commande. il sert à afficher le prix total de chaque article dans une commande.
     def get_total_price(self):
         return self.product.price * self.quantity  # prix actuel (peut changer)
 
+    # Contraintes d'unicité pour éviter les doublons (un produit ne peut apparaître qu'une fois par commande)
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['order', 'product'], name='uniq_order_product'),
