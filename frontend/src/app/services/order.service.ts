@@ -3,6 +3,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
+/* ce service gère les opérations liées aux commandes
+Il permet de passer une commande (checkout), de récupérer la liste des commandes de l'utilisateur et les détails d'une commande spécifique.
+Il utilise HttpClient pour communiquer avec l'API backend.
+*/
+
 /** Une ligne “commande” dans /my_orders/ */
 export interface MyOrder {
   id: number;

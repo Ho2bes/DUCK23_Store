@@ -37,6 +37,7 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(clonedRequest);
   }
 
+  // Fonction utilitaire pour obtenir un cookie par son nom
   private getCookie(name: string): string {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);

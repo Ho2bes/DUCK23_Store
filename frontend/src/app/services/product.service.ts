@@ -15,12 +15,12 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  /** Récupérer tous les produits */
+  /** Récupérer tous les produits. il retourne la réponse observable. il envoie une requête GET à l'API. il sert à afficher la liste des produits. */
   getProducts(): Observable<any> {
     return this.http.get(this.apiUrl);
   }
 
-  /** Récupérer un produit par son ID */
+  /** Récupérer un produit par son ID. il retourne la réponse observable. il envoie une requête GET à l'API. il sert à afficher les détails d'un produit. */
   getProductById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}${id}/`);
   }
