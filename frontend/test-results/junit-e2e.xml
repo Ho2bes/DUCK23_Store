@@ -1,0 +1,22 @@
+<testsuites id="" name="" tests="5" failures="0" skipped="0" errors="0" time="2.5711120000000003">
+<testsuite name="01-smoke-home.spec.ts" timestamp="2025-09-11T09:00:01.779Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.298" errors="0">
+<testcase name="Home charge et affiche du contenu attendu" classname="01-smoke-home.spec.ts" time="1.298">
+</testcase>
+</testsuite>
+<testsuite name="02-nav-products.spec.ts" timestamp="2025-09-11T09:00:01.779Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.457" errors="0">
+<testcase name="Section Produits visible (via lien, route ou ancre)" classname="02-nav-products.spec.ts" time="1.457">
+</testcase>
+</testsuite>
+<testsuite name="03-order-flow.spec.ts" timestamp="2025-09-11T09:00:01.779Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.406" errors="0">
+<testcase name="Page Panier accessible (lien ou route)" classname="03-order-flow.spec.ts" time="1.406">
+</testcase>
+</testsuite>
+<testsuite name="04-auth-or-orders.spec.ts" timestamp="2025-09-11T09:00:01.779Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.3" errors="0">
+<testcase name="Accès Mes commandes: affiche mes commandes OU demande de login" classname="04-auth-or-orders.spec.ts" time="1.3">
+</testcase>
+</testsuite>
+<testsuite name="05-no-console-errors.spec.ts" timestamp="2025-09-11T09:00:01.779Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.28" errors="0">
+<testcase name="Aucune erreur JavaScript bloquante sur la Home" classname="05-no-console-errors.spec.ts" time="1.28">
+</testcase>
+</testsuite>
+</testsuites>
