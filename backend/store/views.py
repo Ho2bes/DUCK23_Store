@@ -99,7 +99,11 @@ class CartViewSet(viewsets.ViewSet):
         try:
             product = get_object_or_404(Product, id=product_id)
 
-            cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product) # On récupère l'item du panier ou on le crée s'il n'existe pas
+            cart_item, created = CartItem.objects.get_or_create(
+                cart=cart,
+                product=product,
+                defaults={"quantity": 0}  # 👈 correction ici
+            )
             cart_item.quantity += int(quantity)
             cart_item.save()
 
