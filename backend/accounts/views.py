@@ -119,4 +119,4 @@ class DeleteUserView(APIView):
         user = request.user
         user.delete()
         logout(request)
-        return JsonResponse({"message": "User deleted successfully."}) 
+        return JsonResponse({"message": "User deleted successfully."})

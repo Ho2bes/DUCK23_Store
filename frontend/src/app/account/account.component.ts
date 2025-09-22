@@ -19,6 +19,8 @@ export class AccountComponent {
 
   constructor(private apiService: ApiService, private router: Router) {}
 
+  // on initialise le composant en récupérant les informations de l'utilisateur via le service ApiService.
+  // on gère également la soumission du formulaire de mise à jour, la déconnexion et la suppression du compte.
   ngOnInit() {
     this.apiService.getUserInfo().subscribe({
       next: (userData: any) => {
@@ -31,12 +33,15 @@ export class AccountComponent {
     });
   }
 
+  // on gère la soumission du formulaire de mise à jour des informations utilisateur.
+  // on affiche un message de succès ou d'erreur en fonction du résultat de la requête.
   onSubmit(updateForm: any) {
     if (!updateForm.valid) {
       this.errorMessage = "❌ Tous les champs doivent être remplis.";
       return;
     }
 
+    // Appel au service pour mettre à jour les informations utilisateur
     this.apiService.updateUser(this.user).subscribe({
       next: () => {
         this.message = "✅ Informations mises à jour avec succès !";
@@ -48,6 +53,9 @@ export class AccountComponent {
     });
   }
 
+  // on gère la déconnexion de l'utilisateur en appelant le service ApiService.
+  // on redirige vers la page de connexion après une déconnexion réussie.
+  // on affiche un message d'erreur en cas de problème lors de la déconnexion.
   logout() {
     this.apiService.logoutUser().subscribe({
       next: () => {
@@ -60,6 +68,10 @@ export class AccountComponent {
     });
   }
 
+  // on gère la suppression du compte utilisateur en appelant le service ApiService.
+  // on demande une confirmation avant de procéder à la suppression.
+  // on redirige vers la page d'enregistrement après une suppression réussie.
+  // on affiche un message d'erreur en cas de problème lors de la suppression.
   deleteAccount() {
     if (confirm("Voulez-vous vraiment supprimer votre compte ?")) {
       this.apiService.deleteUser().subscribe({

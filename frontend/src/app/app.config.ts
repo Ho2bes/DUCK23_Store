@@ -17,12 +17,12 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 export const appConfig = {
   providers: [
     provideHttpClient(
-      withXsrfConfiguration({
+      withXsrfConfiguration({ // configuration pour la protection CSRF des requêtes HTTP. cela spécifie le nom du cookie et de l'en-tête utilisés pour la protection CSRF.
         cookieName: 'csrftoken',
         headerName: 'X-CSRFToken'
       }),
       withInterceptorsFromDi()
     ),
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true } // on ajoute l'interceptor AuthInterceptor à la chaîne d'intercepteurs HTTP. multi: true permet d'avoir plusieurs interceptors. cela permet de modifier les requêtes HTTP sortantes pour inclure des informations d'authentification.
   ]
 };

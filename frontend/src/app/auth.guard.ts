@@ -15,6 +15,9 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
 
     // On demande au service d'authentification si l'utilisateur est connecté
+    // Si oui, on autorise l'accès à la page
+    // Si non, on redirige vers la page de connexion avec l'URL de retour
+    // On gère aussi les erreurs en redirigeant vers la page de connexion
   return authService.isLoggedIn().pipe(
     map(isLoggedIn => {
       if (isLoggedIn) {
