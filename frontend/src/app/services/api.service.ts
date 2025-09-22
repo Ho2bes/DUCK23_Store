@@ -20,7 +20,7 @@ export class ApiService {
 
   // Enregistrement d'un nouvel utilisateur
   registerUser(payload: any): Observable<any> {
-    return this.http.post(`${this.backendUrl}register/`, payload, { withCredentials: true }).pipe(
+    return this.http.post(`${this.backendUrl}register/`, payload, { withCredentials: true }).pipe( // ✅ Envoie une requête POST pour s'enregistrer (avec les cookies) whitcredentials: true permet de conserver les cookies
       catchError(this.handleError)
     );
   }

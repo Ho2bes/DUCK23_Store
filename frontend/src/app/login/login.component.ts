@@ -34,13 +34,14 @@ export class LoginComponent {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/account';
   }
 
+// Gérer la soumission du formulaire de connexion et la validation des champs
   onSubmit(): void {
     if (!this.username || !this.password) {
       this.errorMessage = "❌ Tous les champs doivent être remplis.";
       return;
     }
 
-    const payload = { username: this.username.trim(), password: this.password };
+    const payload = { username: this.username.trim(), password: this.password }; // on prépare les données de connexion à envoyer au service
 
     console.log("📤 Tentative de connexion :", payload);
     this.isLoading = true;
