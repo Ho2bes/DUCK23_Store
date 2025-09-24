@@ -18,7 +18,7 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./order.component.scss'],
 })
 export class OrderComponent implements OnInit {
-  mode: string = 'confirm';
+  mode: string = 'confirm'; // cela sert à déterminer si on est en mode confirmation ou détail.
 
   // ===== CONFIRMATION ===== on gère la confirmation de commande, y compris le chargement du profil utilisateur et du panier.
   me: Me | null = null;
@@ -41,10 +41,10 @@ export class OrderComponent implements OnInit {
   // on initialise le composant en déterminant le mode (confirmation ou détail) en fonction de la présence d'un ID dans l'URL.
   // on charge les données appropriées en fonction du mode.
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id'); // ça sert à récupérer l'ID de la commande depuis l'URL.
     if (id) {
       this.mode = 'detail';
-      this.fetchOrderDetail(Number(id));
+      this.fetchOrderDetail(Number(id)); // on charge le détail de la commande si un ID est présent.
     } else {
       this.mode = 'confirm';
       this.loadConfirmData();
@@ -57,8 +57,8 @@ export class OrderComponent implements OnInit {
   private loadConfirmData(): void {
     this.loadingConfirm = true;
     forkJoin({
-      me: this.auth.getMe().pipe(catchError(() => of(null))),
-      cart: this.cartService.getCart().pipe(catchError(() => of({ items: [] }))),
+      me: this.auth.getMe().pipe(catchError(() => of(null))), // ça sert à récupérer les informations de l'utilisateur connecté.
+      cart: this.cartService.getCart().pipe(catchError(() => of({ items: [] }))), // ça sert à récupérer le panier.
     }).subscribe({
       next: ({ me, cart }: any) => {
         this.me = me;
@@ -109,8 +109,8 @@ export class OrderComponent implements OnInit {
   // en cas d'erreur, on affiche une alerte.
   confirmOrder(): void {
     this.orderService.checkout().subscribe({
-      next: (res: any) => {
-        if (res?.id) {
+      next: (res: any) => { // ça sert à gérer la réponse de la validation de la commande.
+        if (res?.id) { // ça sert à vérifier si la commande a été créée avec succès.
           this.router.navigate(['/order', res.id]); // page détail
         } else {
           this.router.navigate(['/my-orders']);
@@ -124,10 +124,10 @@ export class OrderComponent implements OnInit {
   // on charge le détail d'une commande spécifique en appelant le service OrderService avec l'ID de la commande.
   // on gère le chargement et les erreurs.
   private fetchOrderDetail(id: number): void {
-    this.loadingDetail = true;
+    this.loadingDetail = true; // ça sert à indiquer que le chargement du détail de la commande est en cours.
     this.orderService.getOrderById(id).subscribe({
       next: (o) => {
-        this.order = o;
+        this.order = o; // ça sert à stocker les détails de la commande récupérée. on met o car o est le détail de la commande.
         this.loadingDetail = false;
       },
       error: () => {
@@ -142,15 +142,15 @@ export class OrderComponent implements OnInit {
   // on obtient le prix unitaire d'un article, en gérant les différents formats possibles.
   unitPrice(it: any): number {
     if (!it || !it.product) return 0;
-    const v = (it.product as any).price_amount ?? (it.product as any).price ?? 0;
-    const n = typeof v === 'string' ? parseFloat(v) : Number(v);
+    const v = (it.product as any).price_amount ?? (it.product as any).price ?? 0; // ça sert à obtenir le prix de l'article, en utilisant price_amount si disponible, sinon price.
+    const n = typeof v === 'string' ? parseFloat(v) : Number(v); // ça sert à convertir le prix en nombre, qu'il soit initialement une chaîne ou un nombre.
     return isNaN(n) ? 0 : n;
   }
 
   /** Sous-total résilient (item.price_amount si dispo, sinon unit * qty) */
   // on calcule le sous-total d'un article, en utilisant price_amount si disponible, sinon en multipliant le prix unitaire par la quantité.
   lineTotal(it: any): number {
-    if (!it) return 0;
+    if (!it) return 0; // ça sert à vérifier si l'article est défini.
     const v = (it as any).price_amount;
     if (v !== undefined && v !== null) {
       const n = typeof v === 'string' ? parseFloat(v) : Number(v);
