@@ -1,0 +1,27 @@
+- hosts: all
+  become: yes
+  tasks:
+
+  - name: Copier les fichiers du projet
+    copy:
+      src: ../
+      dest: /home/ubuntu/app/
+      owner: ubuntu
+      group: ubuntu
+
+  - name: Tear down existing services
+    community.docker.docker_compose_v2:
+      project_src: /home/ubuntu/app
+      state: absent
+    become_user: ubuntu
+
+  - name: Create and start services
+    community.docker.docker_compose_v2:
+      project_src: /home/ubuntu/app
+      build: always
+    become_user: ubuntu
+    register: output
+
+  - name: Show results
+    ansible.builtin.debug:
+      var: output
