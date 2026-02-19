@@ -9,7 +9,7 @@ required_version = ">= 1.2"
 }
 
 provider "aws" {
-region = "eu-west-3"
+region = "eu-north-1"
 }
 
 data "aws_ami" "ubuntu" {

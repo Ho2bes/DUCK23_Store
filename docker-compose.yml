@@ -58,7 +58,7 @@ services:
       dockerfile: angular.Dockerfile
     restart: always
     ports:
-      - "4200:4200"
+      - "80:4200"
     volumes:
       - ./frontend:/app
       - /app/node_modules
