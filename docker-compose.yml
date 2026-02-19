@@ -10,11 +10,15 @@ services:
       POSTGRES_DB: 'duck23_store_db'
     ports:
       - "5432:5432"
+    # --- AJOUT : Volume pour ne jamais perdre les données ---
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hobbes -d duck23_store_db"]
       interval: 5s
       timeout: 5s
       retries: 5
+
   adminer:
     depends_on:
       - db
@@ -22,6 +26,7 @@ services:
     restart: always
     ports:
       - 8080:8080
+
   api:
     image: django-api
     build:
@@ -41,7 +46,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: python manage.py runserver 0.0.0.0:8000
+    # --- MODIFICATION : Ajout du loaddata dans la commande de démarrage ---
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py loaddata initial_data.json || true &&
+             python manage.py runserver 0.0.0.0:8000"
+
   front:
     build:
       context: ./frontend
@@ -51,5 +61,8 @@ services:
       - "4200:4200"
     volumes:
       - ./frontend:/app
-      # L'astuce ci-dessous empêche le node_modules de ton PC d'écraser celui du Linux Docker
       - /app/node_modules
+
+# --- AJOUT : Déclaration du volume en bas du fichier ---
+volumes:
+  postgres_data:
