@@ -8,7 +8,7 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost',).split(',')
 
 # ==========================================================================
 # APPLICATION DEFINITION
@@ -142,7 +142,7 @@ CSRF_USE_SESSIONS = False                 # Stockage dans les cookies, pas en se
 CSRF_COOKIE_HTTPONLY = False              # False permet à JavaScript de lire le token
 CSRF_COOKIE_NAME = 'csrftoken'            # Nom standard du cookie CSRF
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'     # En-tête HTTP attendu pour les requêtes
-CSRF_TRUSTED_ORIGINS = ['http://localhost:4200']  # Origines autorisées
+CSRF_TRUSTED_ORIGINS = ['http://localhost:4200', 'http://51.20.144.37']  # Origines autorisées
 CSRF_COOKIE_ALWAYS_SEND = True
 
 # ==========================================================================
@@ -151,7 +151,7 @@ CSRF_COOKIE_ALWAYS_SEND = True
 CORS_ALLOW_CREDENTIALS = True             # Permet d'envoyer les cookies avec les requêtes
 CORS_ALLOW_ALL_ORIGINS = False            # Plus sécurisé que d'autoriser toutes les origines
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4200',              # Frontend Angular
+    'http://localhost:4200', 'http://51.20.144.37',              # Frontend Angular
 ]
 CORS_ALLOW_HEADERS = [
     'accept',

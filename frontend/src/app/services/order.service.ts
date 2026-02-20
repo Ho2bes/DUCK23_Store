@@ -31,7 +31,7 @@ export interface OrderDetail extends MyOrder {
 // on crée un service injectable Angular pour gérer les opérations liées aux commandes.
 @Injectable({ providedIn: 'root' })
 export class OrderService {
-  private apiUrl = 'http://localhost:8000/api/store/cart/';
+  private apiUrl = 'http://51.20.144.37:8000/api/store/cart/';
 
   constructor(private http: HttpClient) {}
 

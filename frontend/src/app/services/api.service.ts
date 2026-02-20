@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class ApiService {
-  private backendUrl = 'http://localhost:8000/api/accounts/';
+  private backendUrl = 'http://51.20.144.37:8000/api/accounts/';
 
   constructor(private http: HttpClient, private router: Router) {}
 

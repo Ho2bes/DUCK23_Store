@@ -1,0 +1,27 @@
+# --- Dossiers systèmes et IDE ---
+.git
+.gitignore
+.github
+.vscode
+.idea
+.DS_Store
+
+# --- Ansible ---
+ansible
+
+# --- FRONTEND (Le plus important pour toi) ---
+node_modules
+.angular
+dist
+tmp
+frontend/node_modules
+frontend/.angular
+frontend/dist
+
+# --- BACKEND ---
+venv
+.venv
+__pycache__
+*.pyc
+backend/venv
+backend/.venv

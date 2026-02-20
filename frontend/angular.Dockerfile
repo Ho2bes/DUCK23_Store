@@ -7,6 +7,9 @@ WORKDIR /app
 # Copie les fichiers de dépendances en premier (pour le cache Docker)
 COPY package*.json ./
 
+# On ajoute cette ligne pour sauver le disque dur :
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
 # Installe les dépendances (Angular CLI inclus si dans devDependencies)
 RUN npm install
 # Si pas Angular CLI en dépendance locale, décommenter la ligne suivante :

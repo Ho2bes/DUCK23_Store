@@ -24,7 +24,7 @@ export interface CartResponse {
 // Service pour gérer les opérations du panier. Il utilise HttpClient pour communiquer avec l'API backend.
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private apiUrl = 'http://localhost:8000/api/store/cart/';
+  private apiUrl = 'http://51.20.144.37:8000/api/store/cart/';
 
   constructor(private http: HttpClient) {}
 
