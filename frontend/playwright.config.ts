@@ -19,7 +19,7 @@ export default defineConfig({
   webServer: {
     command: 'npm start',             // Lance 'ng serve' via npm
     url: 'http://localhost:4200',     // Attend que cette URL réponde "OK"
-    reuseExistingServer: !process.env.CI, // En local, utilise ton serveur déjà lancé. En CI, lance-le.
+    reuseExistingServer: true,
     timeout: 120 * 1000,              // 2 minutes pour démarrer (Angular est parfois lent à compiler)
     ignoreHTTPSErrors: true,
   },
