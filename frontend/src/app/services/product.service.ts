@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 /*
   Service pour gérer les produits
@@ -11,7 +12,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'http://51.20.144.37:8000/api/store/products/';
+  private apiUrl = `${environment.apiUrl}/api/store/products/`;
 
   constructor(private http: HttpClient) {}
 

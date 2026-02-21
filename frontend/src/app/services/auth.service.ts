@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, tap, of, map } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 /*
   Service pour gérer l'authentification des utilisateurs
@@ -26,7 +27,7 @@ export interface Me {
   providedIn: 'root', // Ce service est disponible dans toute l'application
 })
 export class AuthService {
-  private backendUrl = 'http://51.20.144.37:8000/api/accounts/';
+  private backendUrl = `${environment.apiUrl}/api/accounts/`;
 
   constructor(private http: HttpClient, private router: Router) {}   // Le constructeur est une fonction spéciale qui est appelée quand le service est créé
 

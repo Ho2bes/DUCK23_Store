@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 /* ce service gère les opérations liées aux commandes
 Il permet de passer une commande (checkout), de récupérer la liste des commandes de l'utilisateur et les détails d'une commande spécifique.
@@ -31,7 +32,7 @@ export interface OrderDetail extends MyOrder {
 // on crée un service injectable Angular pour gérer les opérations liées aux commandes.
 @Injectable({ providedIn: 'root' })
 export class OrderService {
-  private apiUrl = 'http://51.20.144.37:8000/api/store/cart/';
+  private apiUrl = `${environment.apiUrl}/api/store/cart/`;
 
   constructor(private http: HttpClient) {}
 

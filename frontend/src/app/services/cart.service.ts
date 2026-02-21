@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 /* ce service gère les opérations du panier
 Il permet de récupérer le panier, d'ajouter, de mettre à jour et de supprimer des articles, ainsi que de vider le panier.
@@ -24,7 +25,7 @@ export interface CartResponse {
 // Service pour gérer les opérations du panier. Il utilise HttpClient pour communiquer avec l'API backend.
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private apiUrl = 'http://51.20.144.37:8000/api/store/cart/';
+  private apiUrl = `${environment.apiUrl}/api/store/cart/`;
 
   constructor(private http: HttpClient) {}
 

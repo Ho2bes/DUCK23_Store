@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 /*
   Service pour interagir avec l'API backend
@@ -14,7 +15,7 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class ApiService {
-  private backendUrl = 'http://51.20.144.37:8000/api/accounts/';
+  private backendUrl = `${environment.apiUrl}/api/accounts/`;
 
   constructor(private http: HttpClient, private router: Router) {}
 
