@@ -1,0 +1,48 @@
+name: CD Pipeline - Deploy to AWS
+
+# Le déclencheur : Uniquement quand on push sur la branche 'main'
+# (Change 'main' par 'develop' si tu veux déployer ta branche de dev)
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupère ton code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Installe Ansible sur le runner GitHub
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      # 3. Configure la clé SSH (Partie critique !)
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          # On crée le fichier de clé à partir du Secret
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          # On restreint les droits (obligatoire pour SSH)
+          chmod 600 private_key.pem
+          # On ajoute l'IP du serveur aux "known_hosts" pour éviter la question "Are you sure?"
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      # 4. Crée l'inventaire Ansible à la volée
+      # Au lieu d'utiliser ton fichier hosts.ini local, on en crée un temporaire
+      # Adapte le groupe [webservers] si ton playbook utilise un autre nom !
+      - name: Create Inventory file
+        run: |
+          echo "[webservers]" > inventory.ini
+          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.ANSIBLE_USER }} ansible_ssh_private_key_file=private_key.pem" >> inventory.ini
+
+      # 5. Lance le Playbook
+      # Remplace 'playbook.yml' par le VRAI nom de ton fichier playbook (ex: deploy.yml)
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i inventory.ini playbook.yml
