@@ -122,3 +122,56 @@ class ProductTests(TestCase):
         # "stock" est manquant
         }, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+from django.test import TestCase, Client
+from rest_framework import status
+from accounts.models import CustomUser
+from store.models import Product
+
+class StoreSecurityTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Création d'un admin et d'un utilisateur lambda
+        self.admin = CustomUser.objects.create_superuser(username="admin", email="admin@test.com", password="password123")
+        self.user = CustomUser.objects.create_user(username="user", email="user@test.com", password="password123")
+
+        # Création d'un produit
+        self.product = Product.objects.create(name="Canard Secure", price=10, stock=100)
+
+    def test_non_admin_cannot_create_product(self):
+        """
+        🛡️ Test RBAC : Un utilisateur normal ne peut PAS créer de produit.
+        """
+        self.client.login(username="user", password="password123")
+        response = self.client.post('/api/store/products/', {
+            "name": "Hacked Product",
+            "price": 0,
+            "stock": 100
+        })
+        # Doit être interdit (403)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_non_admin_cannot_delete_product(self):
+        """
+        🛡️ Test RBAC : Un utilisateur normal ne peut PAS supprimer de produit.
+        """
+        self.client.login(username="user", password="password123")
+        response = self.client.delete(f'/api/store/products/{self.product.id}/')
+
+        # Doit être interdit (403)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        # Vérification que le produit existe toujours en base
+        self.assertTrue(Product.objects.filter(id=self.product.id).exists())
+
+    def test_price_integrity(self):
+        """
+        🛡️ Test Logique Métier : On ne doit pas pouvoir créer un produit à prix négatif.
+        Même un admin ne devrait pas pouvoir casser la logique métier.
+        """
+        self.client.login(username="admin", password="password123")
+        response = self.client.post('/api/store/products/', {
+            "name": "Negative Price",
+            "price": -50,  # Prix invalide
+            "stock": 10
+        })
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

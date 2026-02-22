@@ -65,14 +65,29 @@ On utilise le modèle CustomUser pour définir les champs modifiables
 class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'address', 'phone_number', 'email']
+        # On ajoute 'username' pour qu'il soit visible dans la réponse,
+        # mais on va le bloquer en écriture juste après.
+        fields = ['username', 'first_name', 'last_name', 'address', 'phone_number', 'email']
+
+        # 🔒 SÉCURITÉ : On empêche la modification du username
+        read_only_fields = ['username']
 
     def validate_email(self, value):
         """
-        Valide que l'email est au bon format.
+        Valide le format ET l'unicité de l'email.
         """
+        # 1. Vérification du format
         if not re.match(r"[^@]+@[^@]+\.[^@]+", value):
             raise serializers.ValidationError("L'adresse email est invalide.")
+
+        # 2. 🛡️ SÉCURITÉ : Vérification de l'unicité
+        # On récupère l'utilisateur qui fait la requête
+        user = self.context['request'].user
+
+        # On vérifie si un AUTRE utilisateur (exclude self) a déjà cet email
+        if CustomUser.objects.exclude(pk=user.pk).filter(email=value).exists():
+            raise serializers.ValidationError("Cet email est déjà utilisé par un autre compte.")
+
         return value
 
     def validate_phone_number(self, value):
@@ -81,17 +96,6 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         """
         if value and not value.isdigit():
             raise serializers.ValidationError("Le numéro de téléphone ne doit contenir que des chiffres.")
-        return value
-
-    def validate_username(self, value):
-        """
-        Valide que le nom d'utilisateur est unique, sauf si c'est le même utilisateur.
-        """
-        request = self.context.get('request')
-        if request is None or request.user is None:
-            raise serializers.ValidationError("L'utilisateur de la requête n'est pas disponible.")
-        if CustomUser.objects.filter(username=value).exclude(id=request.user.id).exists():
-            raise serializers.ValidationError("Ce nom d'utilisateur est déjà pris.")
         return value
 
 
