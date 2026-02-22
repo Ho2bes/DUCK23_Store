@@ -4,7 +4,7 @@ name: CD Pipeline - Deploy to AWS
 # Ce pipeline ne démarre que si le workflow "CI Playwright" est terminé sur la branche main
 on:
   workflow_run:
-    workflows: ["CI Playwright"]  # ⚠️ Doit être le NOM EXACT dans ton fichier playwright.yml
+    workflows: ["CI Playwright"]
     branches: [main]
     types:
       - completed
@@ -26,28 +26,39 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible
 
-      # 3. Configuration de la clé SSH (Depuis les Secrets GitHub)
+      # 3. Configuration de la clé SSH (Chemin ABSOLU)
+      # ✅ CORRECTION : On stocke la clé dans ~/.ssh/ pour qu'elle soit accessible partout
       - name: Setup SSH Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          printf "%s" "$SSH_PRIVATE_KEY" > ~/.ssh/private_key.pem
+          chmod 600 ~/.ssh/private_key.pem
+          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
 
       # 4. Création de l'inventaire Ansible
+      # ✅ Simplification : On ne met plus le chemin de la clé ici, on le passera en argument global
       - name: Create Inventory file
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          ANSIBLE_USER: ${{ secrets.ANSIBLE_USER }}
         run: |
           echo "[webservers]" > inventory.ini
-          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.ANSIBLE_USER }} ansible_ssh_private_key_file=private_key.pem" >> inventory.ini
+          echo "$SERVER_IP ansible_user=$ANSIBLE_USER" >> inventory.ini
 
       # 5. Création du fichier .env pour la PROD (Depuis le Secret ENV_FILE)
-      # ⚠️ INDISPENSABLE : Ansible va chercher ce fichier à la racine pour le copier
       - name: Create .env file from Secret
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "$ENV_FILE" > .env
 
       # 6. Lancement du Playbook Ansible
-      # ✅ CORRECTION ICI : On pointe vers le dossier ansible/ et le bon nom de fichier
+      # ✅ CORRECTION : On force l'utilisation de la clé absolue avec --private-key
       - name: Run Ansible Playbook
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
-          ansible-playbook -i inventory.ini ansible/deploy-docker-compose.yml
+          ansible-playbook -i inventory.ini ansible/deploy-docker-compose.yml --private-key ~/.ssh/private_key.pem
