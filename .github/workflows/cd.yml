@@ -1,48 +1,53 @@
 name: CD Pipeline - Deploy to AWS
 
-# Le déclencheur : Uniquement quand on push sur la branche 'main'
-# (Change 'main' par 'develop' si tu veux déployer ta branche de dev)
+# 🚀 DÉCLENCHEUR INTELLIGENT
+# Ce pipeline ne démarre que si le workflow "CI Playwright" est terminé sur la branche main
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["CI Playwright"]  # ⚠️ Doit être le NOM EXACT dans ton fichier playwright.yml
+    branches: [main]
+    types:
+      - completed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # 🛡️ SÉCURITÉ : On ne déploie que si les tests sont VERTS (success)
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-      # 1. Récupère ton code
+      # 1. Récupération du code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Installe Ansible sur le runner GitHub
+      # 2. Installation d'Ansible
       - name: Install Ansible
         run: |
           sudo apt-get update
           sudo apt-get install -y ansible
 
-      # 3. Configure la clé SSH (Partie critique !)
+      # 3. Configuration de la clé SSH (Depuis les Secrets GitHub)
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          # On crée le fichier de clé à partir du Secret
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-          # On restreint les droits (obligatoire pour SSH)
           chmod 600 private_key.pem
-          # On ajoute l'IP du serveur aux "known_hosts" pour éviter la question "Are you sure?"
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      # 4. Crée l'inventaire Ansible à la volée
-      # Au lieu d'utiliser ton fichier hosts.ini local, on en crée un temporaire
-      # Adapte le groupe [webservers] si ton playbook utilise un autre nom !
+      # 4. Création de l'inventaire Ansible
       - name: Create Inventory file
         run: |
           echo "[webservers]" > inventory.ini
           echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.ANSIBLE_USER }} ansible_ssh_private_key_file=private_key.pem" >> inventory.ini
 
-      # 5. Lance le Playbook
-      # Remplace 'playbook.yml' par le VRAI nom de ton fichier playbook (ex: deploy.yml)
+      # 5. Création du fichier .env pour la PROD (Depuis le Secret ENV_FILE)
+      # ⚠️ INDISPENSABLE : Ansible va chercher ce fichier à la racine pour le copier
+      - name: Create .env file from Secret
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      # 6. Lancement du Playbook Ansible
+      # ✅ CORRECTION ICI : On pointe vers le dossier ansible/ et le bon nom de fichier
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i inventory.ini playbook.yml
+          ansible-playbook -i inventory.ini ansible/deploy-docker-compose.yml
