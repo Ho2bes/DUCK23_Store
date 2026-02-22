@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  # --- SERVICE BASE DE DONNÉES ---
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # On utilise aussi les variables pour le test de santé
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- SERVICE INTERFACE BDD (ADMINER) ---
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+
+  # --- SERVICE BACKEND (DJANGO) ---
+  api:
+    build:
+      context: ./backend
+      dockerfile: python.Dockerfile
+    image: django-api
+    restart: always
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Ici on fait le lien entre les variables Django et le fichier .env
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: "5432"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      DEBUG: ${DEBUG}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py loaddata initial_data.json || true &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  # --- SERVICE FRONTEND (ANGULAR) ---
+  front:
+    build:
+      context: ./frontend
+      dockerfile: angular.Dockerfile
+    image: app-front
+    restart: always
+    ports:
+      - "80:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+# --- VOLUMES PERSISTANTS ---
+volumes:
+  postgres_data:

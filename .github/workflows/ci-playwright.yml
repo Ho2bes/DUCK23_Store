@@ -1,0 +1,99 @@
+name: CI Playwright
+
+on:
+  push:
+    branches: [ main, develop, ci-playwright ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: django
+          POSTGRES_PASSWORD: django
+          POSTGRES_DB: test_db
+        ports: [ "5432:5432" ]
+        options: >-
+          --health-cmd "pg_isready -U django -d test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Backend deps + migrate + runserver
+        env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DB_NAME: test_db
+          DB_USER: django
+          DB_PASSWORD: django
+          DB_HOST: localhost
+          DB_PORT: 5432
+        run: |
+          python -m venv env
+          source env/bin/activate
+          pip install -r backend/requirements.txt
+          cd backend
+          python manage.py migrate --noinput
+          nohup python manage.py runserver 0.0.0.0:8000 >/dev/null 2>&1 &
+
+      - name: Wait for API (8000)
+        run: |
+          for i in {1..30}; do
+            curl -fsS http://localhost:8000/ || true
+            if curl -fsS http://localhost:8000/ >/dev/null 2>&1; then echo "API up"; break; fi
+            sleep 2
+          done
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Frontend deps + dev server
+        run: |
+          cd frontend
+          npm ci
+          nohup npm run start -- --port 4200 --host 0.0.0.0 >/dev/null 2>&1 &
+
+      - name: Wait for Front (4200)
+        run: |
+          for i in {1..30}; do
+            curl -fsS http://localhost:4200/ || true
+            if curl -fsS http://localhost:4200/ >/dev/null 2>&1; then echo "Front up"; break; fi
+            sleep 2
+          done
+
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        env:
+          BASE_URL: http://localhost:4200
+        run: |
+          cd frontend
+          npx playwright test
+
+      - name: Upload Playwright report (HTML + JUnit)
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            frontend/playwright-report/**
+            frontend/test-results/**

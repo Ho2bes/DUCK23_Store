@@ -1,0 +1,41 @@
+<section class="hero-section container text-center">
+    <img src="assets/img/DUCK23_logo_2025.png" alt="DUCK23 Logo" class="img-fluid" width="200">
+    <h2>Affichez fièrement votre identité,<br> Soutenez notre association.</h2>
+    <p class="hero-text">Une gamme de produits pour briller en dev, au bureau ou en repas de famille.</p>
+    <br>
+    <h4>🚧 Site V2 en construction 🚧</h4>
+    <h5>Ceci est un site dans le cadre d'un projet école. Aucun produit n'est vendu à ce jour.</h5>
+</section>
+
+<!-- Produits -->
+<section class="container my-5">
+    <h2 class="nos-produits">NOS PRODUITS</h2>
+    <br>
+    <br>
+    <div class="row text-center justify-content-center">
+        <div class="col-md-4">
+            <div class="product">
+                <a [routerLink]="['/products', 4]"> <!-- ID = 4 pour Sweatshirt -->
+                    <img src="assets/img/Sweatshirt.png" alt="Sweatshirt" class="img-fluid">
+                </a>
+                <p><b>Sweat-shirt pour rayonner en société</b></p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="product">
+                <a [routerLink]="['/products', 6]"> <!-- ID = 6 pour Mug -->
+                    <img src="assets/img/Mug.png" alt="Mug" class="img-fluid">
+                </a>
+                <p><b>Mug pour boire avec élégance</b></p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="product">
+                <a [routerLink]="['/products', 5]"> <!-- ID = 5 pour Sticker -->
+                    <img src="assets/img/Sticker.png" alt="Sticker" class="img-fluid">
+                </a>
+                <p><b>Sticker pour se coller et ne plus se quitter</b></p>
+            </div>
+        </div>
+    </div>
+</section>

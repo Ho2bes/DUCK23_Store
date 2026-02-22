@@ -1,0 +1,123 @@
+<div class="order-container">
+  <h2 *ngIf="mode === 'confirm'">Confirmation de commande</h2>
+  <h2 *ngIf="mode === 'detail'">Détails de la commande</h2>
+
+  <!-- ===== Mode Confirmation (calqué sur Cart) ===== -->
+  <div *ngIf="mode === 'confirm'">
+    <div *ngIf="loadingConfirm">Chargement…</div>
+
+    <ng-container *ngIf="!loadingConfirm">
+      <!-- 🧍 Infos utilisateur -->
+      <section class="card">
+        <h3>Mes coordonnées</h3>
+
+        <div *ngIf="me; else missingMe">
+          <p><strong>Nom :</strong> {{ me.first_name || '' }} {{ me.last_name || '' }}</p>
+          <p><strong>Email :</strong> {{ me.email }}</p>
+          <p *ngIf="me.phone_number"><strong>Téléphone :</strong> {{ me.phone_number }}</p>
+
+          <div *ngIf="me.address">
+            <strong>Adresse :</strong>
+            <p style="white-space:pre-line">{{ me.address }}</p>
+          </div>
+
+          <div class="actions">
+            <a class="dk-btn dk-btn--ghost" routerLink="/account">Modifier mes informations</a>
+          </div>
+        </div>
+
+        <ng-template #missingMe>
+          <p>Impossible de charger vos informations.</p>
+          <a class="dk-btn dk-btn--ghost" routerLink="/account">Compléter mon profil</a>
+        </ng-template>
+      </section>
+
+      <!-- 🛒 Récap panier -->
+      <section class="card">
+        <ng-container *ngIf="cartItems?.length; else emptyCart">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th>Prix</th>
+                <th>Qté</th>
+                <th>Sous-total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of cartItems">
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }} €</td>
+                <td>
+                  <input
+                    type="number"
+                    [ngModel]="item.quantity"
+                    (ngModelChange)="updateQuantity(item.product.id, $event)"
+                    [ngModelOptions]="{ standalone: true }"
+                    min="1"
+                    class="form-control"
+                    style="width: 70px;"
+                  />
+                </td>
+                <td>{{ item.product.price * item.quantity }} €</td>
+                <td>
+                  <button class="dk-btn dk-btn--danger" (click)="remove(item.product.id)" aria-label="Supprimer">❌</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="total">
+            <strong>Total :</strong>
+            {{ getTotal() }} €
+          </p>
+
+          <button
+            class="dk-btn dk-btn--primary dk-btn--block"
+            (click)="confirmOrder()"
+            [disabled]="!cartItems.length"
+          >
+            Confirmer ma commande
+          </button>
+
+          <div class="actions" style="margin-top:.5rem;">
+            <a routerLink="/cart" class="dk-btn dk-btn--ghost">← Retour au panier</a>
+          </div>
+        </ng-container>
+
+        <ng-template #emptyCart>
+          <p>Votre panier est vide.</p>
+          <a routerLink="/cart" class="dk-btn dk-btn--ghost">← Retour au panier</a>
+        </ng-template>
+      </section>
+    </ng-container>
+  </div>
+
+  <!-- ===== Mode Détail (commande passée) ===== -->
+  <div *ngIf="mode === 'detail'">
+    <div *ngIf="loadingDetail">Chargement…</div>
+
+    <div *ngIf="!loadingDetail && order as o">
+      <a routerLink="/my-orders" class="dk-btn dk-btn--ghost" style="margin-bottom:1rem;">
+        ← Retour à mes commandes
+      </a>
+
+      <section class="card">
+        <p><strong>Commande :</strong> {{ o.order_number }}</p>
+        <p><strong>Total :</strong> {{ (+o.total || 0) | currency:'EUR':'symbol':'1.2-2':'fr' }}</p>
+        <p><strong>Date :</strong> {{ o.created_at | date:'short' }}</p>
+        <p><strong>Statut :</strong> {{ o.status }}</p>
+
+        <h3>Produits</h3>
+        <ul class="lines">
+          <li *ngFor="let item of (o.items || [])">
+            {{ item?.product?.name || '—' }} — {{ item?.quantity || 0 }} ×
+            {{ unitPrice(item) | currency:'EUR':'symbol':'1.2-2':'fr' }} =
+            {{ lineTotal(item) | currency:'EUR':'symbol':'1.2-2':'fr' }}
+          </li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="register-container">
+	<div class="logo-section">
+		<img src="assets/img/DUCK23_logo_2025.png" alt="DUCK23 Logo" class="img-fluid" width="200">
+	  </div>
+	  <div class="login-form">
+	<div class="register-form">
+	  <h2 class="welcome-text">REJOINS-NOUS DÈS MAINTENANT !</h2>
+	  <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)">
+		<input type="text" placeholder="Ton Identifiant" class="input-field" [(ngModel)]="username" name="username" required>
+		<input type="email" placeholder="Ton Email" class="input-field" [(ngModel)]="email" name="email" required>
+		<input type="password" placeholder="Ton mot de passe" class="input-field" [(ngModel)]="password" name="password" required>
+		<button type="submit" class="btn register-btn">S'inscrire</button>
+	  </form>
+	  <p class="login-link">DÉJÀ UN COMPTE ? <a routerLink="/login" class="login-link-text">CONNECTE-TOI</a></p>
+	</div>
+  </div>

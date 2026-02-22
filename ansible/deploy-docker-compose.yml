@@ -1,0 +1,137 @@
+- hosts: all
+  become: yes
+  tasks:
+
+  # --- PARTIE 1 : INSTALLATION DES OUTILS ---
+  - name: Mettre à jour le cache apt
+    apt:
+      update_cache: yes
+
+  - name: Installer Docker et rsync
+    apt:
+      name:
+        - docker.io
+        - python3-docker
+        - python3-pip
+        - rsync
+      state: present
+
+  # --- PARTIE 2 : CRÉATION DE LA SWAP (Optionnel mais recommandé) ---
+  - name: Vérifier si la swap existe
+    shell: swapon --show
+    register: swap_check
+    changed_when: false
+    ignore_errors: yes
+
+  - name: Créer un fichier de Swap de 2Go
+    command: fallocate -l 2G /swapfile
+    when: swap_check.stdout == ""
+
+  - name: Sécuriser la Swap
+    file:
+      path: /swapfile
+      mode: '0600'
+    when: swap_check.stdout == ""
+
+  - name: Formater la Swap
+    command: mkswap /swapfile
+    when: swap_check.stdout == ""
+
+  - name: Activer la Swap
+    command: swapon /swapfile
+    when: swap_check.stdout == ""
+
+  # --- PARTIE 3 : CONFIGURATION DOCKER ---
+  - name: Créer le dossier des plugins Docker
+    file:
+      path: /usr/lib/docker/cli-plugins
+      state: directory
+      mode: '0755'
+
+  - name: Télécharger Docker Compose V2
+    get_url:
+      url: https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-linux-x86_64
+      dest: /usr/lib/docker/cli-plugins/docker-compose
+      mode: '0755'
+
+  - name: S'assurer que Docker est démarré
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  # --- PARTIE 4 : RESET DU DOSSIER APP ---
+  - name: Supprimer l'ancien dossier app
+    file:
+      path: /home/ubuntu/app
+      state: absent
+
+  - name: Créer le dossier app vide
+    file:
+      path: /home/ubuntu/app
+      state: directory
+      owner: ubuntu
+      group: ubuntu
+      mode: '0755'
+
+  # --- PARTIE 5 : TRANSFERT DES FICHIERS ---
+  - name: Synchroniser les fichiers (Code Source)
+    synchronize:
+      src: "{{ playbook_dir }}/../"   # Remonte d'un cran pour prendre tout le projet
+      dest: "/home/ubuntu/app/"
+      rsync_path: "sudo rsync"
+      delete: yes   # Supprime sur le serveur ce qui n'est plus dans le git
+      rsync_opts:
+        - "--exclude=.git"
+        - "--exclude=.github"
+        - "--exclude=.vscode"
+        - "--exclude=node_modules"
+        - "--exclude=venv"
+        - "--exclude=.venv"
+        - "--exclude=__pycache__"
+        - "--exclude=ansible"
+        - "--exclude=.DS_Store"
+        - "--exclude=.angular"
+        - "--exclude=frontend/.angular"
+        - "--exclude=frontend/node_modules"
+        - "--exclude=frontend/dist"
+        - "--exclude=frontend/tmp"
+        - "--exclude=terraform"
+        - "--exclude=.terraform"
+        - "--exclude=.env"  # On exclut pour ne pas écraser avec une version vide
+
+  - name: Fixer les permissions finales
+    file:
+      path: /home/ubuntu/app
+      state: directory
+      owner: ubuntu
+      group: ubuntu
+      recurse: yes
+
+  # ✅ LA CORRECTION EST ICI
+  - name: Copier le fichier .env (Secrets)
+    copy:
+      src: "{{ playbook_dir }}/../.env"  # Prend le fichier créé par GitHub Actions
+      dest: "/home/ubuntu/app/.env"
+      owner: ubuntu
+      group: ubuntu
+      mode: '0600'
+
+  # --- PARTIE 6 : DÉCOLLAGE 🚀 ---
+  - name: Nettoyer Docker (Prune)
+    shell: docker system prune -a -f --volumes
+    ignore_errors: yes
+
+  - name: Lancer les services Docker Compose
+    community.docker.docker_compose_v2:
+      project_src: /home/ubuntu/app
+      build: always
+      pull: always
+      # On passe false pour éviter que compose ne télécharge pas les images si elles existent déjà (force rebuild)
+    environment:
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+    register: output
+
+  - name: Afficher le résultat
+    debug:
+      var: output

@@ -1,0 +1,14 @@
+<div class="login-container">
+  <div class="logo-section">
+    <img src="assets/img/DUCK23_logo_2025.png" alt="DUCK23 Logo" class="img-fluid" width="200">
+  </div>
+  <div class="login-form">
+    <h2 class="welcome-text">TU AS DÉJÀ UN COMPTE ? <br> BRAVO !</h2>
+    <form (ngSubmit)="onSubmit()">
+      <input type="text" placeholder="Ton Identifiant" class="input-field" [(ngModel)]="username" name="username" required>
+      <input type="password" placeholder="Ton mot de passe" class="input-field" [(ngModel)]="password" name="password" required>
+      <button type="submit" class="btn login-btn">Connexion</button>
+    </form>
+    <p class="register-link">PAS DE COMPTE, <a routerLink="/register" class="register-link-text">CLIQUE ICI</a></p>
+  </div>
+</div>

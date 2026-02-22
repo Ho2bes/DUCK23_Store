@@ -1,0 +1,42 @@
+<section class="container my-5">
+  <h2 class="text-center">Mon Panier</h2>
+
+  <table class="table mt-4">
+    <thead>
+      <tr>
+        <th>Produit</th>
+        <th>Prix</th>
+        <th>Quantité</th>
+        <th>Total</th>
+        <th>Supprimer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of cart">
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.product.price }} €</td>
+        <td>
+          <input type="number"
+                 [(ngModel)]="item.quantity"
+                 (change)="updateQuantity(item.id, item.quantity)"
+                 min="1"
+                 class="form-control"
+                 style="width: 70px;">
+        </td>
+        <td>{{ item.product.price * item.quantity }} €</td>
+        <td>
+          <!-- AVANT: class="btn btn-danger btn-sm" -->
+          <button class="dk-btn dk-btn--danger" (click)="remove(item.product.id)">❌</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="text-end mt-3">Total : {{ getTotal() }} €</h4>
+
+  <!-- AVANT: boutons sans classe -->
+  <div class="actions" style="margin-top:1rem;">
+    <button class="dk-btn dk-btn--primary" (click)="goToOrder()">Commander</button>
+    <button class="dk-btn dk-btn--ghost" (click)="goToMyOrders()">Mes commandes</button>
+  </div>
+</section>

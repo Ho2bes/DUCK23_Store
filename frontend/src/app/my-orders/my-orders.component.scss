@@ -1,0 +1,96 @@
+.order-info {
+  margin: .5rem 0 1rem;
+  padding: .75rem 1rem;
+  border-left: 4px solid #0ea5e9;
+  background: #f0f9ff;
+  font-size: .95rem;
+
+  a {
+    color: #0ea5b0;
+    text-decoration: underline;
+  }
+
+  .warn {
+    margin-right: .35rem;
+  }
+}
+
+.actions {
+  margin: .25rem 0 1rem;
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+/* === Boutons harmonisés avec "Commander" / "Mes commandes" === */
+.dk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .6rem 1.2rem;
+  border-radius: 9999px; /* style pill arrondi */
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background .2s ease, transform .05s ease, filter .15s ease;
+  text-decoration: none;
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+}
+
+.dk-btn--primary {
+  background: #0ea5b0;
+  color: #fff;
+
+  &:hover {
+    filter: brightness(.98);
+    background: #0b8e9a;
+  }
+
+  &:active {
+    background: #097e89;
+  }
+}
+
+.dk-btn--ghost {
+  background: transparent;
+  color: #0ea5b0;
+  border: 2px solid #0ea5b0;
+
+  &:hover {
+    background: #f0f9ff;
+  }
+}
+
+.dk-btn--danger {
+  background: #dc2626;
+  color: #fff;
+  font-size: .85rem;
+  padding: .45rem .9rem;
+
+  &:hover {
+    background: #b91c1c;
+  }
+
+  &:active {
+    background: #991b1b;
+  }
+}
+
+.order-list {
+  list-style: none;
+  padding: 0;
+
+  li {
+    cursor: pointer;
+    padding: .5rem 0;
+    border-bottom: 1px solid #eee;
+  }
+}

@@ -1,0 +1,21 @@
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6 text-center">
+            <img [src]="'assets/img/' + product.name + '.png'" alt="{{ product.name }}" class="img-fluid">
+        </div>
+        <div class="col-md-6">
+            <h2>{{ product.name }}</h2>
+            <p><b>Description :</b> {{ product.description }}</p>
+            <p class="product-price"><b>Prix :</b> {{ product.price }} €</p>
+            <p><b>Stock :</b> {{ product.stock }} en stock</p>
+
+            <!-- Sélection de la quantité -->
+            <label for="quantity"><strong>Quantité :</strong></label>
+            <input type="number" id="quantity" [(ngModel)]="quantity" min="1" class="form-control w-25">
+
+            <!-- Bouton Ajouter au panier -->
+            <button type="button" class="btn btn-primary mt-3" (click)="addToCart()">Ajouter au panier</button>
+        </div>
+    </div>
+</div>
+
