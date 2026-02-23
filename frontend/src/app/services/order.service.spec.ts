@@ -22,7 +22,7 @@ describe('OrderService', () => {
     svc.getMyOrders().subscribe((res: MyOrder[]) => {
       received = res;
     });
-    const req = http.expectOne('http://localhost:8000/api/store/cart/my_orders/');
+    const req = http.expectOne('http://51.20.144.37:8000/api/store/cart/my_orders/');
     expect(req.request.method).toBe('GET');
     req.flush([{
       id: 1,
