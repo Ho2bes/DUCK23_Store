@@ -45,7 +45,7 @@ describe('OrderService', () => {
     svc.getOrderById(1).subscribe((res: OrderDetail) => {
       received = res;
     });
-    const req = http.expectOne('http://localhost:8000/api/store/cart/orders/1/');
+    const req = http.expectOne('http://51.20.144.37:8000/api/store/cart/orders/1/');
     expect(req.request.method).toBe('GET');
     req.flush({
       id: 1,
@@ -70,7 +70,7 @@ describe('OrderService', () => {
     svc.checkout().subscribe((res) => {
       received = res;
     });
-    const req = http.expectOne('http://localhost:8000/api/store/cart/checkout/');
+    const req = http.expectOne('http://51.20.144.37:8000/api/store/cart/checkout/');
     expect(req.request.method).toBe('POST');
     // Le backend retourne { order_id, ... }, mais le service mappe vers { id, ... }
     req.flush({ order_id: 123, total: '20.00', status: 'completed', created_at: '2025-01-01T00:00:00Z' });
@@ -86,7 +86,7 @@ describe('OrderService', () => {
         status = e.status;
       },
     });
-    const req = http.expectOne('http://localhost:8000/api/store/cart/orders/999/');
+    const req = http.expectOne('http://51.20.144.37:8000/api/store/cart/orders/999/');
     req.flush({ detail: 'Forbidden' }, { status: 403, statusText: 'Forbidden' });
     expect(status).toBe(403);
   });
