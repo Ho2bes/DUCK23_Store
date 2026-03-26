@@ -1,129 +1,122 @@
-# DUCK23 Store
+# 🦆 DUCK23 Store
 
-DUCK23 Store est une plateforme e-commerce développée en **Django** pour le backend, **Angular** pour le frontend, et **PostgreSQL** comme base de données. Ce projet vise à fournir une solution complète de vente en ligne avec gestion des utilisateurs et des produits.
+**DUCK23 Store** est une plateforme e-commerce moderne conçue avec une architecture découplée (**SDR**). Ce projet démontre non seulement des compétences en développement Fullstack (Django/Angular), mais aussi une maîtrise avancée du cycle de vie logiciel (**DevOps**) et de l'Infrastructure as Code (**IaC**).
+
+---
+
+## 🏗️ Architecture & Stack Technique
+
+| Couche | Technologie | Rôle |
+| :--- | :--- | :--- |
+| **Frontend** | Angular 18 | Interface SPA dynamique |
+| **Backend** | Django REST Framework | API métier et sécurité |
+| **Base de données** | PostgreSQL | Persistance des données (Volumes Docker) |
+| **Infrastructure** | AWS (EC2) | Hébergement Cloud |
+| **IaC** | Terraform | Provisionnement des ressources Cloud |
+| **Configuration** | Ansible | Automatisation du déploiement et sécurité |
+| **Conteneurisation**| Docker & Compose | Isolation des services |
+| **CI/CD** | GitHub Actions | Pipeline de tests et déploiement continu |
+
+---
 
 ## 📌 Fonctionnalités
 
 ### Utilisateur
-- 📌 Création de compte
-- 🔑 Connexion et déconnexion
-- ⚙️ Modification des informations utilisateur
-- ❌ Suppression de compte
-- 🛒 Ajout et gestion du panier
+- 🛒 **E-commerce :** Consultation du catalogue, gestion du panier et commandes.
+- 🔑 **Gestion de compte :** Création, connexion/déconnexion et suppression de compte.
+- ⚙️ **Profil :** Modification des informations personnelles.
 
-### Administrateur
-- 📦 Ajout, mise à jour et suppression de produits
-- 📜 Gestion des commandes clients
-- 👥 Gestion des utilisateurs
+### Administrateur (RBAC)
+- 📦 **Gestion du catalogue :** Ajout, mise à jour et suppression de produits (CRUD).
+- 📜 **Suivi :** Gestion des commandes clients et des utilisateurs.
 
-## 🏗️ Technologies utilisées
+---
 
-| Technologie  | Usage |
-|-------------|----------------------------|
-| Django      | Backend (API REST) |
-| Angular     | Frontend (Interface utilisateur) |
-| PostgreSQL  | Base de données |
-| Bootstrap   | Design et mise en page |
+## 🛠️ Infrastructure & Sécurité (Focus DevOps)
+
+Le déploiement est entièrement automatisé pour garantir la reproductibilité et la sécurité de l'environnement :
+
+* **Provisionnement (Terraform) :** Création de l'instance EC2, configuration des Security Groups (Pare-feu) et gestion des clés SSH.
+* **Configuration (Ansible) :** Installation automatique de Docker, durcissement du système Linux et configuration de **Fail2Ban** pour la protection contre les attaques par force brute (SSH/API).
+* **Pipeline CI/CD :** * Exécution automatique des tests unitaires et d'intégration à chaque *push*.
+    * Vérification de la logique de permissions pour éviter toute escalade de privilèges.
+    * Déploiement automatique sur le serveur AWS via SSH après validation des tests.
+
+---
 
 ## 📁 Structure du projet
 
 ```bash
 DUCK23_Store/
-│── backend/               # Code du backend Django
-│   ├── accounts/          # Gestion des utilisateurs et authentification
-│   ├── store/             # Gestion des produits et commandes
-│   ├── settings.py        # Configuration du projet Django
-│── frontend/              # Code du frontend Angular
-│   ├── src/
-│   │   ├── app/           # Composants et services Angular
-│   │   ├── assets/        # Images et fichiers statiques
-│   ├── angular.json       # Configuration Angular
-│── docs/                  # Documentation du projet
-│── README.md              # Documentation principale
-│── requirements.txt       # Dépendances Python
-│── package.json           # Dépendances JavaScript
+│── terraform/            # Infrastructure as Code (AWS)
+│── ansible/              # Automatisation de la configuration serveur
+│── .github/workflows/    # Pipelines CI/CD (GitHub Actions)
+│── backend/              # Code du backend Django
+│   ├── accounts/         # Authentification et profils
+│   ├── store/            # Logique métier (Produits/Commandes)
+│── frontend/             # Code du frontend Angular
+│   ├── src/app/          # Composants et Services
+│   ├── src/environments/ # Configuration des URLs (Dev/Prod)
+│── docker-compose.yml    # Orchestration des conteneurs
+│── README.md             # Documentation principale
+
+# 🚀 Installation et Lancement (Local)
+
+## 🐋 Via Docker (Recommandé)
+
+```bash
+docker-compose up --build
 ```
 
-## 🚀 Installation et lancement
+> Le frontend sera disponible sur `http://localhost:4200` et l'API sur `http://localhost:8000`.
 
-### Backend (Django)
+---
 
-1. Cloner le dépôt
-   ```bash
-   git clone https://github.com/Ho2bes/DUCK23_Store.git
-   cd DUCK23_Store/backend
-   ```
-2. Créer un environnement virtuel et installer les dépendances
-   ```bash
-   python -m venv env
-   source env/bin/activate  # (ou env\Scripts\activate sous Windows)
-   pip install -r requirements.txt
-   ```
-3. Configurer la base de données PostgreSQL
-   - Modifier les paramètres dans `settings.py`
-   ```python
-   DATABASES = {
-       'default': {
-           'ENGINE': 'django.db.backends.postgresql',
-           'NAME': 'duck23_db',
-           'USER': 'postgres',
-           'PASSWORD': 'password',
-           'HOST': 'localhost',
-           'PORT': '5432',
-       }
-   }
-   ```
-4. Effectuer les migrations et démarrer le serveur
-   ```bash
-   python manage.py migrate
-   python manage.py runserver
-   ```
+## 🛠️ Mode Développement Manuel
 
-### Frontend (Angular)
+**Backend :**
+```bash
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
 
-1. Aller dans le dossier du frontend
-   ```bash
-   cd ../frontend
-   ```
-2. Installer les dépendances
-   ```bash
-   npm install
-   ```
-3. Lancer l'application
-   ```bash
-   ng serve
-   ```
+**Frontend :**
+```bash
+npm install
+ng serve
+```
+
+---
 
 ## 📊 API Endpoints
 
-### Authentification
-| Méthode | Endpoint            | Description |
-|---------|--------------------|-------------|
-| POST    | `/api/auth/register/` | Inscription utilisateur |
-| POST    | `/api/auth/login/`    | Connexion utilisateur |
-| POST    | `/api/auth/logout/`   | Déconnexion utilisateur |
+| Méthode | Endpoint | Description | Accès |
+|---------|----------|-------------|-------|
+| `POST` | `/api/auth/register/` | Inscription | Public |
+| `POST` | `/api/auth/login/` | Connexion | Public |
+| `GET` | `/api/products/` | Liste produits | Public |
+| `POST` | `/api/products/` | Ajout produit | Admin |
+| `POST` | `/api/orders/` | Passer commande | Client |
 
-### Produits
-| Méthode | Endpoint            | Description |
-|---------|--------------------|-------------|
-| GET     | `/api/products/`    | Liste des produits |
-| POST    | `/api/products/`    | Ajouter un produit (Admin) |
-| PUT     | `/api/products/:id/` | Modifier un produit (Admin) |
-| DELETE  | `/api/products/:id/` | Supprimer un produit (Admin) |
+---
 
-### Commandes
-| Méthode | Endpoint            | Description |
-|---------|--------------------|-------------|
-| GET     | `/api/orders/`      | Voir les commandes (Admin) |
-| POST    | `/api/orders/`      | Passer une commande |
+## ⚠️ État du Déploiement Actuel (MVP)
 
-## 🔧 Déploiement
+Le projet est actuellement déployé sur **AWS** en tant que Produit Minimum Viable (MVP).
 
-Déploiement à venir
+- **Frontend :** Servi via le serveur de développement Angular (Vite). Un overlay d'avertissement *"URI Malformed"* peut apparaître suite à la perte de connexion WebSocket de l'outil de développement en environnement distant *(sans impact sur les fonctionnalités métiers)*.
+- **Backend :** API exposée directement sur le port `8000`, sécurisée par **Fail2Ban**.
+- **Prochaine itération :** Intégration de **Nginx** en tant que Reverse Proxy pour unifier l'entrée sur le port `80`, servir les fichiers statiques optimisés et masquer les ports internes.
 
-## 🛠️ Contributeurs
+---
 
-- 👤 **Ho2bes** - Développeur principal
+## 👤 Contributeur
+
+**[Ho2bes](https://github.com/Ho2bes)** 
+
+---
 
 ## 📜 Licence
-Ce projet est sous licence the Apache License 2.0 - voir le fichier [LICENSE](LICENSE) pour plus de détail.
+
+Ce projet est sous licence **Apache License 2.0**.
