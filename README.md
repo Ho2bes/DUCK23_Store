@@ -1,5 +1,6 @@
 # 🦆 DUCK23 Store
 
+> **Accès direct à l'application :** [http://51.20.144.37/](http://51.20.144.37/)
 **DUCK23 Store** est une plateforme e-commerce moderne conçue avec une architecture découplée (**SDR**). Ce projet démontre non seulement des compétences en développement Fullstack (Django/Angular), mais aussi une maîtrise avancée du cycle de vie logiciel (**DevOps**) et de l'Infrastructure as Code (**IaC**).
 
 ---
